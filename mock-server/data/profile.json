@@ -1,0 +1,112 @@
+{
+  "name": "JOHN MATTHEW A. MARCELO",
+  "title": "Software Developer | Full Stack (Laravel · Vue.js · React)",
+  "subtitle": "Full Stack Developer with 3+ years building responsive web apps with Laravel, Vue.js, React, & MySQL + 4+ years in Systems Administration",
+  "email": "jm.marcelo0212@gmail.com",
+  "phone": "0908-519-2226",
+  "location": "Bocaue, Bulacan, Philippines",
+  "availability": "Available for Software Developer Roles (Remote / Hybrid / On-site)",
+  "bio": "Full Stack Developer with 3+ years of experience building responsive web applications using Laravel, Vue.js, React, and MySQL, backed by 4+ years in IT support and systems administration. Skilled in designing RESTful APIs, building component-based user interfaces, and using modern AI tools to write, debug, and document code more efficiently. Seeking a Software Developer role where I can build reliable, user-focused systems that contribute to the growth of the organization.",
+  "socials": {
+    "github": "https://github.com/",
+    "linkedin": "https://linkedin.com/",
+    "email": "mailto:jm.marcelo0212@gmail.com"
+  },
+  "stats": [
+    { "label": "Full Stack Development", "value": "3+ Years" },
+    { "label": "IT & Systems Admin", "value": "4+ Years" },
+    { "label": "Pinnacle Client Systems", "value": "5 Live Portals" },
+    { "label": "Core Stack", "value": "Laravel / Vue / React" }
+  ],
+  "experience": [
+    {
+      "company": "Pinnacle Technologies Inc.",
+      "location": "Grace Park, Caloocan, Metro Manila",
+      "role": "Full Stack Developer",
+      "period": "March 2023 – Present",
+      "summary": "Build and maintain responsive, component-based user interfaces using React and Vue.js along with HTML5, CSS3, and JavaScript, while architecting server-side Laravel logic and RESTful APIs connecting frontends with optimized MySQL databases.",
+      "achievements": [
+        "Build and maintain responsive, component-based user interfaces using React and Vue.js, along with HTML5, CSS3, and JavaScript.",
+        "Implement front-end features and enhancements based on design mockups and user feedback, ensuring cross-browser compatibility across devices.",
+        "Design and implement server-side logic with the Laravel framework, and develop RESTful APIs that connect React and Vue.js front-ends to the back-end.",
+        "Create and optimize MySQL database structures for efficient data storage, fast querying, and high availability.",
+        "Use modern AI tools (ChatGPT, Claude, GitHub Copilot) to accelerate coding, debugging, refactoring, and documentation, reviewing all AI-generated code before deployment.",
+        "Manage code with Git on GitHub and GitLab; collaborate with the team and take part in rigorous code reviews to maintain code quality.",
+        "Delivered and supported core client systems including CLDH-EI AIMS, TMS AIMS, Bernardo College AIMS, Philyra Cloud POS, and ICCT Colleges SMS."
+      ]
+    },
+    {
+      "company": "Technical Support & Systems Administration",
+      "location": "Philippines",
+      "role": "Technical Support",
+      "period": "September 2018 – March 2023",
+      "summary": "Managed hardware, networks, servers, and security software while troubleshooting complex system bugs and delivering user technical training.",
+      "achievements": [
+        "Set up, configured, and maintained hardware, software, drivers, and peripheral devices such as routers.",
+        "Installed and managed LAN/WAN networks and components, including servers and IP configuration (Cisco Networking).",
+        "Managed security software and settings to protect systems and networks from attacks, and performed regular system upgrades.",
+        "Troubleshot system failures and bugs, restored functionality, and maintained comprehensive records of repairs and fixes.",
+        "Provided timely technical support and trained users on system adoption and computer best practices."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. Computer Science",
+      "institution": "Asian Institute of Computer Studies",
+      "location": "Caloocan City",
+      "period": "2014 – 2018"
+    }
+  ],
+  "internships_and_awards": [
+    {
+      "title": "Best in Thesis (2018)",
+      "description": "3D Educational System — Recognized for outstanding technical innovation and engineering execution."
+    },
+    {
+      "title": "Intern, Loan and Accounting Department (300 hrs)",
+      "description": "Bayanihan St. John Multipurpose Cooperative, Bocaue, Bulacan — Supported financial records and automated ledgers."
+    },
+    {
+      "title": "Intern, Accounting Department (300 hrs)",
+      "description": "Best Choice Inc., Bagong Barrio, Caloocan — Assisted in financial reconciliations and database records."
+    }
+  ],
+  "skills": {
+    "frontend": [
+      { "name": "React", "level": 94 },
+      { "name": "Vue.js", "level": 92 },
+      { "name": "JavaScript (ES6+)", "level": 92 },
+      { "name": "HTML5 & CSS3", "level": 96 },
+      { "name": "Bootstrap & Responsive Design", "level": 95 },
+      { "name": "Tailwind CSS", "level": 90 }
+    ],
+    "backend": [
+      { "name": "PHP & Laravel Framework", "level": 95 },
+      { "name": "RESTful API Architecture", "level": 95 },
+      { "name": "Java", "level": 82 },
+      { "name": "C#", "level": 80 },
+      { "name": "VB.NET", "level": 80 }
+    ],
+    "databases": [
+      { "name": "MySQL Optimization", "level": 92 },
+      { "name": "Oracle", "level": 80 },
+      { "name": "MongoDB", "level": 80 }
+    ],
+    "ai_and_productivity": [
+      { "name": "AI-Assisted Development", "level": 96 },
+      { "name": "Prompt Engineering", "level": 95 },
+      { "name": "ChatGPT & Claude Integration", "level": 94 },
+      { "name": "GitHub Copilot", "level": 92 },
+      { "name": "Microsoft Office Suite", "level": 90 }
+    ],
+    "tools_and_systems": [
+      { "name": "Git, GitHub & GitLab", "level": 94 },
+      { "name": "Linux (Red Hat, CentOS, Ubuntu)", "level": 88 },
+      { "name": "Windows Systems Administration", "level": 92 },
+      { "name": "Cisco Networking (LAN/WAN, IP Routing)", "level": 86 },
+      { "name": "Android Studio (Java)", "level": 80 },
+      { "name": "Unity, Blender, Adobe Premiere, Photoshop", "level": 82 }
+    ]
+  }
+}

@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>John Matthew A. Marcelo | Full Stack Developer (Laravel · Vue.js · React)</title>
+  <meta name="description" content="Portfolio of John Matthew A. Marcelo - Full Stack Developer with 3+ years experience in Laravel, Vue.js, React, and MySQL, featuring enterprise client projects from Pinnacle Technologies and an LLM-powered AI Agent." />
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Central Portfolio AI Configuration -->
+  <script src="config.js"></script>
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              bg: '#080b11',
+              card: '#0f172a',
+              border: '#1e293b'
+            },
+            brand: {
+              blue: '#3b82f6',
+              indigo: '#6366f1',
+              emerald: '#10b981',
+              cyan: '#06b6d4'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080b11;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.06) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-panel-hover {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-panel-hover:hover {
+      transform: translateY(-3px);
+      border-color: rgba(59, 130, 246, 0.35);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(59, 130, 246, 0.15);
+    }
+    .glow-blue {
+      box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3);
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #080b11; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+  </style>
+</head>
+<body class="text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+  <div id="root"></div>
+
+  <!-- React Application Source -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const PROFILE = {
+      name: "JOHN MATTHEW A. MARCELO",
+      title: "Software Developer | Full Stack (Laravel · Vue.js · React)",
+      email: "jm.marcelo0212@gmail.com",
+      phone: "0908-519-2226",
+      location: "Bocaue, Bulacan, Philippines",
+      availability: "Available for Software Developer Roles (Remote / Hybrid / On-site)",
+      bio: "Full Stack Developer with 3+ years of experience building responsive web applications using Laravel, Vue.js, React, and MySQL, backed by 4+ years in IT support and systems administration. Skilled in designing RESTful APIs, building component-based user interfaces, and using modern AI tools to write, debug, and document code more efficiently. Seeking a Software Developer role where I can build reliable, user-focused systems that contribute to the growth of the organization.",
+      stats: [
+        { label: "Full Stack Experience", value: "3+ Years" },
+        { label: "IT & Systems Admin", value: "4+ Years" },
+        { label: "Pinnacle Client Deployments", value: "5 Portals" },
+        { label: "Core Stack", value: "Laravel / Vue / React" }
+      ],
+      experience: [
+        {
+          company: "Pinnacle Technologies Inc.",
+          location: "Grace Park, Caloocan, Metro Manila",
+          role: "Full Stack Developer",
+          period: "March 2023 – Present",
+          summary: "Build and maintain responsive, component-based user interfaces using React and Vue.js, along with HTML5, CSS3, and JavaScript, while architecting server-side Laravel logic and RESTful APIs connecting to optimized MySQL database structures.",
+          achievements: [
+            "Build and maintain responsive, component-based user interfaces using React and Vue.js, along with HTML5, CSS3, and JavaScript.",
+            "Implement front-end features and enhancements based on design mockups and user feedback, ensuring cross-browser compatibility across devices.",
+            "Design and implement server-side logic with the Laravel framework, and develop RESTful APIs that connect React and Vue.js front-ends to the back-end.",
+            "Create and optimize MySQL database structures for efficient data storage and retrieval.",
+            "Use modern AI tools (ChatGPT, Claude, GitHub Copilot) to speed up coding, debugging, refactoring, and documentation, reviewing all AI-generated code before use.",
+            "Manage code with Git on GitHub and GitLab; collaborate with the team and take part in code reviews to maintain code quality and share knowledge.",
+            "Delivered key client systems: CLDH-EI AIMS, TMS AIMS, Bernardo College AIMS, Philyra Cloud POS, and ICCT Colleges SMS."
+          ]
+        },
+        {
+          company: "Technical Support & Systems Administration",
+          location: "Philippines",
+          role: "Technical Support",
+          period: "September 2018 – March 2023",
+          summary: "Set up, configured, and maintained hardware, drivers, routers, Cisco networking (LAN/WAN), server administration (Linux, Windows), and user technical training.",
+          achievements: [
+            "Set up, configured, and maintained hardware, software, drivers, and peripheral devices such as routers.",
+            "Installed and managed LAN/WAN networks and components, including servers and IP configuration.",
+            "Managed security software and settings to protect systems and networks from attacks, and performed regular upgrades.",
+            "Troubleshot system failures and bugs, restored functionality, and kept records of repairs and fixes for future reference.",
+            "Provided timely technical support and trained users to use computers correctly."
+          ]
+        }
+      ],
+      education: [
+        {
+          degree: "B.S. Computer Science",
+          institution: "Asian Institute of Computer Studies",
+          location: "Caloocan City",
+          period: "2014 – 2018"
+        }
+      ],
+      awards: [
+        { title: "Best in Thesis (2018)", desc: "3D Educational System — Outstanding software engineering & pedagogical design" },
+        { title: "Intern, Loan & Accounting Department (300 hrs)", desc: "Bayanihan St. John Multipurpose Cooperative, Bocaue, Bulacan" },
+        { title: "Intern, Accounting Department (300 hrs)", desc: "Best Choice Inc., Bagong Barrio, Caloocan" }
+      ],
+      skills: {
+        frontend: ["React", "Vue.js", "JavaScript (ES6+)", "HTML5 & CSS3", "Bootstrap", "Tailwind CSS", "Responsive Design"],
+        backend: ["PHP & Laravel Framework", "RESTful APIs", "Java", "C#", "VB.NET"],
+        databases: ["MySQL Optimization", "Oracle", "MongoDB"],
+        ai_tools: ["AI-Assisted Development", "Prompt Engineering", "ChatGPT", "Claude", "GitHub Copilot", "Microsoft Office"],
+        systems: ["Git, GitHub & GitLab", "Linux (Red Hat, CentOS, Ubuntu)", "Windows Administration", "Cisco Networking (LAN/WAN)"]
+      }
+    };
+
+    const PINNACLE_PROJECTS = [
+      {
+        id: 1,
+        slug: "cldh-ei-aims",
+        title: "CLDH-EI Academic Information Management System (AIMS)",
+        client: "Central Luzon Doctor's Hospital Educational Institution / Pinnacle",
+        url: "https://cldh-ei.pinnacle.edu.ph/admin/login",
+        category: "Enterprise ERP",
+        badge: "Production Live",
+        summary: "Enterprise-grade academic management platform for medical and allied health education, handling student admissions, grade submissions, faculty evaluations, and registrar operations.",
+        description: "CLDH-EI AIMS is an institutional-scale web portal powering the daily educational and administrative operations of Central Luzon Doctor's Hospital Educational Institution. Orchestrates admissions, grading, prerequisite checks, and transcripts.",
+        key_features: [
+          "Granular Role-Based Access Control (RBAC) across Super Admin, Deans, Faculty, and Registrars",
+          "Automated Grade Encoding, GPA calculation, and batch Transcript of Records (TOR) generation",
+          "Real-time Class Scheduling and Conflict Detection Algorithm",
+          "National Privacy Commission (NPC) compliant session security & data privacy protections"
+        ],
+        tech_stack: ["Laravel", "PHP", "MySQL", "AdminLTE", "REST API", "RBAC", "Bootstrap"],
+        metrics: { speed: "99.8% Faster Batch Computation", users: "5,000+ Students & Staff" }
+      },
+      {
+        id: 2,
+        slug: "tms-aims",
+        title: "Tarlac Montessori School AIMS",
+        client: "Tarlac Montessori School / Pinnacle Technologies",
+        url: "https://tms.pinnacle.edu.ph/admin/login",
+        category: "Educational ERP",
+        badge: "Production Live",
+        summary: "Customized school administration ERP driving student lifecycle from enrollment to graduation, integrating K-12 grading standards, tuition billing, and attendance tracking.",
+        description: "Automated complex quarterly grading matrices, report card generation, tuition installment accounting, and faculty assignments for Montessori and basic education curricula.",
+        key_features: [
+          "Automated DepEd-compliant quarterly grade computation & Form 137/138 export",
+          "Student financial ledger: tuition installment tracking, automated discount computation, and cashier reconciliation",
+          "Configurable dynamic skin and theme architecture with CSS custom properties",
+          "Security seal verification & automated session idle timeout prevention"
+        ],
+        tech_stack: ["Laravel", "PHP", "MySQL", "Bootstrap", "ERP", "PDF Automation", "EdTech"],
+        metrics: { speed: "Instant batch PDF reports", users: "10,000+ Cumulative Profiles" }
+      },
+      {
+        id: 3,
+        slug: "bc-aims",
+        title: "Bernardo College Academic Portal (BC AIMS)",
+        client: "Bernardo College / Pinnacle Technologies",
+        url: "https://bc.pinnacle.edu.ph/admin/login",
+        category: "Enterprise ERP",
+        badge: "Production Live",
+        summary: "Higher education academic portal delivering registrar operations, course prerequisites evaluation, curriculum audit, and faculty management.",
+        description: "Built high-accuracy degree audit algorithms to evaluate graduation prerequisites across degree programs and streamline dean and registrar clearance workflows.",
+        key_features: [
+          "Curriculum tree verification & degree prerequisite tracking",
+          "Faculty loading, room allocation, and curriculum scheduling matrices",
+          "Online student clearances, document requests, and graduation tracking",
+          "Unified password reset and self-service account recovery system"
+        ],
+        tech_stack: ["Laravel", "PHP", "MySQL", "Academic ERP", "Registrar System", "REST API"],
+        metrics: { speed: "85% reduction in manual verification", concurrency: "Peak enrollment stability" }
+      },
+      {
+        id: 4,
+        slug: "pos-tms-philyra",
+        title: "Philyra Cloud Point of Sale (POS) & Inventory System",
+        client: "Pinnacle Technologies, Inc. / Philyra Cloud",
+        url: "https://pos-tms.philyra.cloud/login",
+        category: "FinTech / POS",
+        badge: "Cloud SaaS Live",
+        summary: "High-speed cloud-based Point of Sale and Inventory Management System with real-time cashier checkout, barcode integration, receipt printing, and cryptographic security.",
+        description: "Architected and implemented a high-performance, modern cloud POS application hosted on Philyra Cloud. Built for rapid item lookups, offline-tolerant cashier scanning, inventory stock synchronization, and end-of-day Z-reading financial reports.",
+        key_features: [
+          "Blazing-fast cashier checkout interface with instant barcode scanner parsing",
+          "Real-time multi-location inventory depletion and low-stock reorder triggers",
+          "SHA-512 client-side password hashing and secure token transmission",
+          "Thermal receipt printing, cash drawer kick triggering, and discount calculation"
+        ],
+        tech_stack: ["Laravel", "PHP", "Cloud POS", "Inventory Management", "SHA-512", "Codebase UI", "FinTech"],
+        metrics: { speed: "< 120ms per sale submission", uptime: "99.95% Cloud SLA" }
+      },
+      {
+        id: 5,
+        slug: "icct-sms",
+        title: "ICCT Colleges Student Management System (SMS)",
+        client: "ICCT Colleges / Pinnacle Technologies",
+        url: "https://sms.icct.edu.ph/login",
+        category: "High-Concurrency",
+        badge: "High Concurrency",
+        summary: "Large-scale centralized student admission, enrollment, and credentials platform supporting tens of thousands of applicants and active college students.",
+        description: "Engineered core high-concurrency admission pipelines serving 50,000+ students, handling 15,000+ daily concurrent applicant registrations during peak enrollment rush.",
+        key_features: [
+          "Massive-scale online student onboarding & automated student number generation",
+          "Multi-campus data federation supporting diverse college departments and branches",
+          "Integrated helpdesk & emergency hotline dispatch integration",
+          "High-throughput load handling during semester rush enrollment periods"
+        ],
+        tech_stack: ["Laravel", "PHP", "High Concurrency", "MySQL Cluster", "Student Portal", "REST APIs", "SaaS"],
+        metrics: { speed: "15,000+ Daily Peak Admissions", users: "50,000+ Enrolled Students" }
+      }
+    ];
+
+    const LLM_SYSTEM_PROMPT = `
+You are the AI Assistant representing John Matthew A. Marcelo, a Full Stack Developer (Laravel · Vue.js · React) based in Bocaue, Bulacan, Philippines.
+Email: jm.marcelo0212@gmail.com | Phone: 0908-519-2226
+Experience:
+- Full Stack Developer at Pinnacle Technologies Inc. (March 2023 - Present)
+  Client Systems:
+  1. CLDH-EI AIMS: https://cldh-ei.pinnacle.edu.ph/admin/login
+  2. TMS AIMS: https://tms.pinnacle.edu.ph/admin/login
+  3. Bernardo College AIMS: https://bc.pinnacle.edu.ph/admin/login
+  4. Philyra Cloud POS TMS: https://pos-tms.philyra.cloud/login (<120ms latency, SHA-512 security)
+  5. ICCT Colleges SMS: https://sms.icct.edu.ph/login (50,000+ students, 15,000+ daily admissions)
+- Technical Support & Systems Administration (Sept 2018 - March 2023): Cisco networking (LAN/WAN), Linux/Windows servers.
+- Education: B.S. Computer Science from Asian Institute of Computer Studies (2014-2018), Best in Thesis (3D Educational System).
+Answer recruiter and visitor inquiries with high technical professionalism.
+`;
+
+    // Multi-Provider Live LLM Call Function
+    async function executeLiveLlm(provider, apiKey, model, userQuery, messageHistory) {
+      if (provider === 'gemini') {
+        const gemModel = model || 'gemini-1.5-flash';
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${gemModel}:generateContent?key=${apiKey}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: LLM_SYSTEM_PROMPT }] },
+            contents: messageHistory.map(m => ({
+              role: m.sender === 'user' ? 'user' : 'model',
+              parts: [{ text: m.text }]
+            }))
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `Gemini API returned status ${res.status}`);
+        return data.candidates?.[0]?.content?.parts?.[0]?.text;
+      }
+
+      if (provider === 'openai') {
+        const oaModel = model || 'gpt-4o-mini';
+        const url = 'https://api.openai.com/v1/chat/completions';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: oaModel,
+            messages: [
+              { role: 'system', content: LLM_SYSTEM_PROMPT },
+              ...messageHistory.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }))
+            ]
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `OpenAI API returned status ${res.status}`);
+        return data.choices?.[0]?.message?.content;
+      }
+
+      if (provider === 'groq') {
+        const groqModel = model || 'llama-3.3-70b-versatile';
+        const url = 'https://api.groq.com/openai/v1/chat/completions';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({
+            model: groqModel,
+            messages: [
+              { role: 'system', content: LLM_SYSTEM_PROMPT },
+              ...messageHistory.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }))
+            ]
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `Groq API returned status ${res.status}`);
+        return data.choices?.[0]?.message?.content;
+      }
+
+      if (provider === 'ollama') {
+        const url = 'http://localhost:11434/api/chat';
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: model || 'llama3',
+            messages: [
+              { role: 'system', content: LLM_SYSTEM_PROMPT },
+              ...messageHistory.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }))
+            ],
+            stream: false
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error("Could not reach Ollama at localhost:11434");
+        return data.message?.content;
+      }
+
+      throw new Error(`Unsupported LLM provider: ${provider}`);
+    }
+
+    // Built-in Knowledge Base Resolver
+    function resolveLocalKnowledge(q) {
+      const text = q.toLowerCase().trim();
+
+      if (text.includes('contact') || text.includes('email') || text.includes('phone') || text.includes('reach') || text.includes('call') || text.includes('hire') || text.includes('location')) {
+        return `You can reach **John Matthew A. Marcelo** directly:\n\n` +
+          `• 📧 **Email:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com)\n` +
+          `• 📱 **Phone:** 0908-519-2226\n` +
+          `• 📍 **Location:** Bocaue, Bulacan, Philippines (Open to Remote / Hybrid / On-site roles)\n\n` +
+          `Feel free to reach out directly for full-stack software developer opportunities!`;
+      }
+
+      if (text.includes('who is') || text.includes('what is') || text.includes('about') || text.includes('bio') || text.includes('developer') || text === 'jm' || text === 'john' || text === 'john matthew') {
+        return `**John Matthew A. Marcelo** is a **Full Stack Software Developer** with 3+ years of experience in **Laravel, Vue.js, React, and MySQL**, backed by 4+ years in IT support and systems administration.\n\n` +
+          `• **Current Role:** Full Stack Developer at **Pinnacle Technologies Inc.** (since March 2023).\n` +
+          `• **Flagship Client Portals:** Contributed to CLDH-EI AIMS, TMS AIMS, Bernardo College, Philyra Cloud POS, and ICCT Colleges SMS.\n` +
+          `• **Academic Honor:** 🏆 **Best in Thesis Award (2018)** for '3D Educational System' (B.S. Computer Science, AICS Caloocan).\n` +
+          `• **Contact:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) • 0908-519-2226\n\n` +
+          `Ask me about any of his projects, technical stack, or how to get in touch!`;
+      }
+
+      if (text.includes('pos') || text.includes('philyra') || text.includes('point of sale') || text.includes('barcode')) {
+        return `**Philyra Cloud Point of Sale (POS) & Inventory System** is a flagship cloud platform John Matthew contributed to at Pinnacle Technologies.\n\n` +
+          `• **Sub-120ms Latency:** Instant barcode scanning & checkout execution.\n` +
+          `• **SHA-512 Security:** Client-side cryptographic hashing preventing man-in-the-middle tampering.\n` +
+          `• **Multi-Store Inventory:** Real-time stock decrementing with ACID-compliant MySQL row locks.\n` +
+          `• **Stack:** Laravel MVC, Codebase UI, Thermal Receipt Driver.\n\n` +
+          `👉 [Explore Live POS Deployment](https://pos-tms.philyra.cloud/login)`;
+      }
+
+      if (text.includes('cldh') || text.includes('hospital') || text.includes('doctor')) {
+        return `**CLDH-EI Academic Information Management System (AIMS)** serves Central Luzon Doctor's Hospital Educational Institution.\n\n` +
+          `• Orchestrates admissions, grading, faculty evaluations, and registrar operations.\n` +
+          `• Granular **Role-Based Access Control (RBAC)** across Super Admins, Deans, and Faculty.\n` +
+          `• Fully compliant with **National Privacy Commission (NPC)** guidelines.\n\n` +
+          `👉 [Explore Live CLDH-EI Portal](https://cldh-ei.pinnacle.edu.ph/admin/login)`;
+      }
+
+      if (text.includes('tms') || text.includes('montessori') || text.includes('tarlac')) {
+        return `**Tarlac Montessori School AIMS** is an educational management ERP custom-tailored for Montessori & K-12 operations.\n\n` +
+          `• DepEd-compliant quarterly grading matrices with automated Form 137/138 batch PDF exports.\n` +
+          `• Complete student financial ledgers, tuition installments, and cashier reconciliation.\n` +
+          `• Modular CSS-variable theming engine built on AdminLTE.\n\n` +
+          `👉 [Explore Live TMS Portal](https://tms.pinnacle.edu.ph/admin/login)`;
+      }
+
+      if (text.includes('bernardo') || text.includes('bc ') || text.includes('bc.pinnacle')) {
+        return `**Bernardo College AIMS** is an academic ERP designed to automate registrar and dean operations.\n\n` +
+          `• Degree prerequisite auditing, room allocation, faculty loading, and online student clearances.\n\n` +
+          `👉 [Explore Live BC Portal](https://bc.pinnacle.edu.ph/admin/login)`;
+      }
+
+      if (text.includes('icct') || text.includes('sms') || text.includes('student management') || text.includes('concurrency')) {
+        return `**ICCT Colleges Student Management System (SMS)** is a high-concurrency web platform serving 50,000+ students.\n\n` +
+          `• Engineered to withstand **15,000+ daily concurrent applicant transactions** during enrollment peak.\n` +
+          `• Multi-campus branch architecture with automated student number generation.\n` +
+          `• Optimized with MySQL read replicas and Cloudflare rate limiting.\n\n` +
+          `👉 [Explore Live ICCT Portal](https://sms.icct.edu.ph/login)`;
+      }
+
+      if (text.includes('skills') || text.includes('stack') || text.includes('laravel') || text.includes('vue') || text.includes('react') || text.includes('mysql') || text.includes('php')) {
+        return `**John Matthew's Core Technical Skills:**\n\n` +
+          `• **Front-End:** React, Vue.js, JavaScript (ES6+), HTML5, CSS3, Bootstrap, Tailwind CSS\n` +
+          `• **Back-End:** PHP, Laravel Framework, RESTful APIs, Java, C#, VB.NET\n` +
+          `• **Databases:** MySQL (Schema optimization & query tuning), Oracle, MongoDB\n` +
+          `• **AI Tools:** Prompt Engineering, ChatGPT, Claude, GitHub Copilot`;
+      }
+
+      if (text.includes('education') || text.includes('thesis') || text.includes('degree') || text.includes('award')) {
+        return `**Education & Honors:**\n\n` +
+          `• **B.S. in Computer Science (2014 – 2018)** — Asian Institute of Computer Studies, Caloocan City.\n` +
+          `• **🏆 Best in Thesis (2018):** '3D Educational System' — Recognized for technical excellence and interactive design.\n` +
+          `• **Internships:** Bayanihan St. John Cooperative (300 hrs) & Best Choice Inc. (300 hrs).`;
+      }
+
+      if (text.includes('age') || text.includes('how old') || text.includes('birthday') || text.includes('birth date') || text.includes('born') || text.includes('years old')) {
+        return `As an AI Portfolio Representative, I don't have an age, but **John Matthew A. Marcelo** is an experienced software developer who graduated with a B.S. in Computer Science in **2018** (winning **Best in Thesis**).\n\n` +
+          `He brings over **7+ total years of technology experience**:\n` +
+          `• **3+ years** as a Full Stack Developer (Laravel, Vue.js, React, MySQL) at Pinnacle Technologies Inc.\n` +
+          `• **4+ years** in Technical Support & Systems Administration\n\n` +
+          `Would you like to know more about his projects, technical stack, or how to contact him?`;
+      }
+
+      if (text.includes('why hire') || text.includes('why choose') || text.includes('strength') || text.includes('why should') || text.includes('hire you')) {
+        return `Here is what makes **John Matthew A. Marcelo** a strong candidate for Software Developer roles:\n\n` +
+          `1. **Full-Stack Proficiency:** Strong command of Laravel MVC, RESTful APIs, Vue.js, React, and MySQL database optimization.\n` +
+          `2. **Production-Proven at Scale:** Contributed to 5 live portals at Pinnacle Technologies, including the ICCT SMS supporting 15,000+ daily concurrent applicant transactions and Philyra POS with sub-120ms latency.\n` +
+          `3. **Systems & Security Depth:** 4+ years in IT systems administration gives him practical mastery of Linux servers, Cisco networking, and application security (SHA-512, RBAC, session protection).\n` +
+          `4. **AI-Driven Acceleration:** Actively leverages modern AI tools (GitHub Copilot, ChatGPT, Claude) to write cleaner, well-tested code faster.`;
+      }
+
+      if (text.includes('available') || text.includes('availability') || text.includes('remote') || text.includes('hybrid') || text.includes('relocate') || text.includes('onsite')) {
+        return `**Availability & Work Preferences:**\n\n` +
+          `• **Status:** Actively available for Software Developer / Full Stack Engineer roles.\n` +
+          `• **Arrangements:** Open to **Remote**, **Hybrid**, or **On-site** positions.\n` +
+          `• **Base Location:** Bocaue, Bulacan, Philippines.\n` +
+          `• **Reach out:** Email [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) or call \`0908-519-2226\` to get in touch!`;
+      }
+
+      return `Hello! I am the **AI Portfolio Agent** for **John Matthew A. Marcelo**.\n\n` +
+        `Ask me about:\n` +
+        `• **Who is John Matthew**: Full Stack Developer (Laravel · Vue.js · React)\n` +
+        `• **5 Pinnacle client projects**: CLDH-EI, TMS, Bernardo College, Philyra POS, and ICCT SMS\n` +
+        `• **Technical stack**: REST APIs, MySQL optimization, and React/Vue\n` +
+        `• **Contact information**: Email (\`jm.marcelo0212@gmail.com\`) and phone (\`0908-519-2226\`)`;
+    }
+
+    // React Application
+    function App() {
+      const [filter, setFilter] = useState('all');
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [isResumeOpen, setIsResumeOpen] = useState(false);
+      const [isChatOpen, setIsChatOpen] = useState(false);
+
+      // Centralized Gemini API Key (Loaded from window or localStorage)
+      const [geminiApiKey, setGeminiApiKey] = useState(() => window.PORTFOLIO_GEMINI_KEY || localStorage.getItem('marcelo_gemini_key') || '');
+
+      // Chat Messages
+      const [chatMessages, setChatMessages] = useState([
+        {
+          id: 1,
+          sender: 'agent',
+          text: `👋 Hello! I am the **AI Portfolio Agent** for **John Matthew A. Marcelo**.\n\nAsk me anything about:\n• **Pinnacle client projects** (CLDH-EI, TMS, Bernardo College, Philyra POS, ICCT SMS)\n• **Technical stack** (Laravel, Vue.js, React, MySQL, REST APIs)\n• **Experience & Education** (3+ yrs full stack, 4+ yrs IT systems admin)\n• How to get in touch for software developer roles!`,
+          timestamp: "Just now"
+        }
+      ]);
+      const [chatInput, setChatInput] = useState('');
+      const [chatLoading, setChatLoading] = useState(false);
+      const [chatChips, setChatChips] = useState([
+        "What did you build at Pinnacle?",
+        "Explain Philyra POS architecture",
+        "How does ICCT SMS handle concurrency?",
+        "What is your core tech stack?",
+        "How to contact John Matthew?"
+      ]);
+
+      // API Explorer
+      const [apiEndpoint, setApiEndpoint] = useState('/api/projects');
+      const [apiOutput, setApiOutput] = useState(JSON.stringify(PINNACLE_PROJECTS, null, 2));
+
+      const filteredProjects = PINNACLE_PROJECTS.filter(p => {
+        if (filter === 'erp') return p.category.includes('ERP');
+        if (filter === 'pos') return p.category.includes('POS') || p.category.includes('FinTech');
+        if (filter === 'scale') return p.category.includes('Concurrency') || p.slug.includes('icct');
+        return true;
+      });
+
+      const handleSendMessage = async (textToSend) => {
+        const text = textToSend || chatInput;
+        if (!text.trim() || chatLoading) return;
+
+        const userMsg = {
+          id: Date.now(),
+          sender: 'user',
+          text: text.trim(),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        const updatedHistory = [...chatMessages, userMsg];
+        setChatMessages(updatedHistory);
+        setChatInput('');
+        setChatLoading(true);
+
+        try {
+          let reply = '';
+          const activeKey = geminiApiKey || window.PORTFOLIO_GEMINI_KEY;
+
+          // 1. If central Gemini key is provided, query Google Gemini 1.5 Flash directly
+          if (activeKey && activeKey.trim() !== '' && !activeKey.includes('YOUR_GEMINI')) {
+            try {
+              reply = await executeLiveLlm('gemini', activeKey.trim(), 'gemini-1.5-flash', text, updatedHistory);
+            } catch (gemErr) {
+              console.warn("Direct Gemini call error, trying backend or local resolver:", gemErr);
+            }
+          }
+
+          // 2. If no direct key or call failed, try the backend API endpoint
+          if (!reply) {
+            try {
+              const res = await fetch('http://localhost:8000/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, query: text, history: updatedHistory })
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data && data.reply) {
+                  reply = data.reply;
+                }
+              }
+            } catch (apiErr) {
+              // Local mock or offline
+            }
+          }
+
+          // 3. Built-in contextual knowledge resolver (John Matthew CV & Pinnacle portfolios)
+          if (!reply) {
+            reply = resolveLocalKnowledge(text);
+          }
+
+          setChatMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 1,
+              sender: 'agent',
+              text: reply,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+        } catch (e) {
+          setChatMessages(prev => [
+            ...prev,
+            {
+              id: Date.now() + 1,
+              sender: 'agent',
+              text: resolveLocalKnowledge(text),
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          ]);
+        } finally {
+          setChatLoading(false);
+        }
+      };
+
+      const handleTestApi = (ep) => {
+        setApiEndpoint(ep);
+        if (ep === '/api/projects') setApiOutput(JSON.stringify(PINNACLE_PROJECTS, null, 2));
+        if (ep === '/api/profile') setApiOutput(JSON.stringify(PROFILE, null, 2));
+        if (ep === '/api/projects/pos-tms-philyra') {
+          const pos = PINNACLE_PROJECTS.find(p => p.slug === 'pos-tms-philyra');
+          setApiOutput(JSON.stringify(pos, null, 2));
+        }
+        if (ep === '/api/metrics') {
+          setApiOutput(JSON.stringify({
+            developer: "John Matthew A. Marcelo",
+            enterprise_portals: 5,
+            active_users: "60,000+",
+            pos_latency: "< 120ms",
+            uptime: "99.9%",
+            framework: "Laravel 11 MVC & React / Vue.js",
+            llm_integration: "Gemini / OpenAI / Groq / Ollama Active"
+          }, null, 2));
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col font-sans">
+          
+          {/* Top Sticky Navbar */}
+          <nav className="fixed top-0 left-0 right-0 z-40 bg-[#080b11]/85 backdrop-blur-md border-b border-slate-800">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+              <a href="#" className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-blue-500/20">
+                  JM
+                </div>
+                <div>
+                  <span className="font-bold text-white tracking-tight text-sm sm:text-base">
+                    John Matthew Marcelo
+                  </span>
+                  <p className="text-[10px] text-slate-400 font-mono -mt-1">Full Stack Developer (Laravel · Vue.js · React)</p>
+                </div>
+              </a>
+
+              <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+                <a href="#about" className="hover:text-blue-400 transition-colors">About</a>
+                <a href="#projects" className="hover:text-blue-400 transition-colors">Projects</a>
+                <a href="#skills" className="hover:text-blue-400 transition-colors">Skills</a>
+                <a href="#experience" className="hover:text-blue-400 transition-colors">Experience</a>
+                <a href="#api-explorer" className="hover:text-blue-400 transition-colors">API Explorer</a>
+                <a href="#contact" className="hover:text-blue-400 transition-colors">Contact</a>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  onClick={() => setIsChatOpen(true)}
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all glow-blue"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Ask AI Agent</span>
+                </button>
+                <button
+                  onClick={() => setIsResumeOpen(true)}
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+                >
+                  CV / Resume
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          {/* Hero Section */}
+          <section className="pt-32 pb-20 md:pt-40 md:pb-28 relative">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 mb-6">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>{PROFILE.availability}</span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div className="lg:col-span-7 space-y-6">
+                  <div>
+                    <p className="text-blue-400 font-mono text-sm tracking-wider uppercase font-semibold">
+                      JOHN MATTHEW A. MARCELO
+                    </p>
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mt-1">
+                      Full Stack Developer <br />
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-cyan-400">
+                        Laravel · Vue.js · React
+                      </span>
+                    </h1>
+                  </div>
+
+                  <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
+                    {PROFILE.bio}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 pt-1 font-mono text-xs">
+                    <span className="px-2.5 py-1 rounded-md bg-blue-950/60 text-blue-300 border border-blue-800/50">Laravel & PHP</span>
+                    <span className="px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">⚛ React & Vue.js</span>
+                    <span className="px-2.5 py-1 rounded-md bg-cyan-950/60 text-cyan-300 border border-cyan-800/50">MySQL Optimization</span>
+                    <span className="px-2.5 py-1 rounded-md bg-indigo-950/60 text-indigo-300 border border-indigo-800/50">LLM & AI-Assisted Dev</span>
+                  </div>
+
+                  <div className="pt-4 flex flex-wrap gap-4">
+                    <a
+                      href="#projects"
+                      className="px-6 py-3.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 transition-all hover:scale-105"
+                    >
+                      View Pinnacle Projects
+                    </a>
+                    <button
+                      onClick={() => setIsChatOpen(true)}
+                      className="px-6 py-3.5 rounded-xl font-semibold text-sm bg-slate-900 hover:bg-slate-800 text-blue-400 border border-blue-500/40 glow-blue transition-all"
+                    >
+                      Chat with AI Agent (LLM)
+                    </button>
+                    <button
+                      onClick={() => setIsResumeOpen(true)}
+                      className="px-5 py-3.5 rounded-xl font-semibold text-sm bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 transition-colors"
+                    >
+                      View Resume
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Terminal Metrics Card */}
+                <div className="lg:col-span-5">
+                  <div className="glass-panel rounded-2xl p-6 border border-slate-800 shadow-2xl">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4 font-mono text-xs text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                        <span className="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                        <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                      </div>
+                      <span className="text-[11px]">marcelo-production-summary.sh</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 font-mono">
+                      <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
+                        <p className="text-[10px] text-slate-400 uppercase">Full Stack</p>
+                        <p className="text-2xl font-bold text-blue-400 mt-1">3+ Years</p>
+                        <p className="text-[10px] text-slate-400">Laravel, Vue, React</p>
+                      </div>
+                      <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
+                        <p className="text-[10px] text-slate-400 uppercase">IT & Systems</p>
+                        <p className="text-2xl font-bold text-emerald-400 mt-1">4+ Years</p>
+                        <p className="text-[10px] text-slate-400">Networking & Servers</p>
+                      </div>
+                      <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
+                        <p className="text-[10px] text-slate-400 uppercase">Pinnacle Portals</p>
+                        <p className="text-2xl font-bold text-cyan-400 mt-1">5 Systems</p>
+                        <p className="text-[10px] text-slate-400">AIMS, POS & SMS</p>
+                      </div>
+                      <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-xl">
+                        <p className="text-[10px] text-slate-400 uppercase">Honor</p>
+                        <p className="text-xl font-bold text-indigo-400 mt-1">Best Thesis</p>
+                        <p className="text-[10px] text-slate-400">3D Educational System</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 p-3 rounded-xl bg-blue-950/40 border border-blue-800/40 text-xs">
+                      <div className="flex justify-between items-center text-blue-400 font-semibold mb-1">
+                        <span>🤖 Interactive AI Portfolio Assistant</span>
+                        <button onClick={() => setIsChatOpen(true)} className="text-[10px] underline hover:text-white">Ask Question</button>
+                      </div>
+                      <p className="text-slate-300 text-[11px] italic">
+                        Powered by AI with full context on John Matthew's 5 Pinnacle projects, Laravel MVC architecture, and resume.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* About Section */}
+          <section id="about" className="py-20 border-t border-slate-800/80 bg-slate-950/40">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <p className="text-blue-400 font-mono text-xs uppercase tracking-widest">Professional Profile</p>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                  Building Reliable, Scalable & User-Focused Systems
+                </h2>
+                <p className="mt-4 text-slate-300 text-sm sm:text-base leading-relaxed">
+                  Based in Bocaue, Bulacan, Philippines. Experienced in building responsive enterprise applications at Pinnacle Technologies Inc., with strong foundations in database design, RESTful APIs, and systems administration.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="glass-panel glass-panel-hover rounded-2xl p-6">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold mb-4">
+                    MVC
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-1.5">Laravel Framework</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Server-side logic, Eloquent ORM, RESTful APIs, and cross-platform integrations.
+                  </p>
+                </div>
+
+                <div className="glass-panel glass-panel-hover rounded-2xl p-6">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold mb-4">
+                    ⚛
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-1.5">Vue.js & React Frontends</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Responsive, component-driven user interfaces ensuring seamless cross-browser compatibility.
+                  </p>
+                </div>
+
+                <div className="glass-panel glass-panel-hover rounded-2xl p-6">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold mb-4">
+                    ✨
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-1.5">AI-Assisted Development</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Prompt engineering, ChatGPT, Claude, and GitHub Copilot to accelerate coding and refactoring.
+                  </p>
+                </div>
+
+                <div className="glass-panel glass-panel-hover rounded-2xl p-6">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold mb-4">
+                    🛡️
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-1.5">Systems & Networking</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    4+ years in IT support: Cisco networking (LAN/WAN), Linux (Red Hat/Ubuntu), and Windows admin.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Pinnacle Projects Section */}
+          <section id="projects" className="py-24 border-t border-slate-800/80">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div>
+                  <span className="text-blue-400 font-mono text-xs uppercase tracking-wider">Client Portfolio</span>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+                    Client Projects at <span className="text-blue-400">Pinnacle Technologies</span>
+                  </h2>
+                  <p className="mt-2 text-slate-300 text-sm max-w-2xl">
+                    Live production systems delivering educational ERP, cloud POS, and high-concurrency student admissions.
+                  </p>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: 'all', label: 'All Projects (5)' },
+                    { id: 'erp', label: 'Academic ERPs (3)' },
+                    { id: 'pos', label: 'Cloud POS (1)' },
+                    { id: 'scale', label: 'High Concurrency (1)' }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setFilter(tab.id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        filter === tab.id
+                          ? 'bg-blue-600 text-white shadow'
+                          : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProjects.map(project => (
+                  <div
+                    key={project.id}
+                    className="glass-panel glass-panel-hover rounded-2xl flex flex-col justify-between overflow-hidden border border-slate-800 group"
+                  >
+                    <div className="p-6 space-y-4">
+                      <div className="flex justify-between items-center text-[11px] font-mono">
+                        <span className="px-2.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">
+                          {project.category}
+                        </span>
+                        <span className="text-emerald-400 font-semibold">● {project.badge}</span>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-xs text-blue-400 font-mono mt-0.5">{project.client}</p>
+                      </div>
+
+                      <p className="text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-3">
+                        {project.summary}
+                      </p>
+
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 font-mono text-xs flex justify-between">
+                        <span className="text-slate-400 text-[11px]">Primary Impact:</span>
+                        <span className="text-emerald-400 font-bold">{project.metrics.speed}</span>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.tech_stack.slice(0, 4).map((tech, i) => (
+                          <span key={i} className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-950/70 border-t border-slate-800 flex justify-between items-center">
+                      <button
+                        onClick={() => setSelectedProject(project)}
+                        className="text-xs font-semibold text-blue-400 hover:underline"
+                      >
+                        Architectural Case Study →
+                      </button>
+
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-300 border border-blue-500/40 hover:bg-blue-600 hover:text-white transition-all"
+                      >
+                        Live Portal ↗
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </section>
+
+          {/* Technical Skills Section */}
+          <section id="skills" className="py-24 border-t border-slate-800/80 bg-slate-950/40">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <p className="text-blue-400 font-mono text-xs uppercase tracking-widest">Technical Competencies</p>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                  Full-Stack Skillset & Systems Expertise
+                </h2>
+                <p className="mt-4 text-slate-300 text-sm">
+                  3+ years in full-stack web development paired with 4+ years in IT support and systems administration.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="glass-panel rounded-2xl p-6 border border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 pb-2 border-b border-slate-800 flex items-center gap-2">
+                    <span>💻</span> Front-End Development
+                  </h3>
+                  <div className="space-y-4 text-xs font-sans">
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>React</span>
+                        <span className="font-mono text-blue-400">94%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full w-[94%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>Vue.js</span>
+                        <span className="font-mono text-blue-400">92%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full w-[92%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>JavaScript (ES6+)</span>
+                        <span className="font-mono text-blue-400">92%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full w-[92%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>HTML5, CSS3 & Bootstrap / Responsive Design</span>
+                        <span className="font-mono text-blue-400">96%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-500 rounded-full w-[96%]"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-panel rounded-2xl p-6 border border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 pb-2 border-b border-slate-800 flex items-center gap-2">
+                    <span>⚙️</span> Back-End & Databases
+                  </h3>
+                  <div className="space-y-4 text-xs font-sans">
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>PHP & Laravel Framework</span>
+                        <span className="font-mono text-emerald-400">95%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full w-[95%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>RESTful API Design & Server Logic</span>
+                        <span className="font-mono text-emerald-400">95%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full w-[95%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>MySQL Database Structures & Optimization</span>
+                        <span className="font-mono text-emerald-400">92%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full w-[92%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>Java, C#, VB.NET, Oracle & MongoDB</span>
+                        <span className="font-mono text-emerald-400">82%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full w-[82%]"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-panel rounded-2xl p-6 border border-slate-800">
+                  <h3 className="text-lg font-bold text-white mb-4 pb-2 border-b border-slate-800 flex items-center gap-2">
+                    <span>🤖</span> AI, Systems & Networking
+                  </h3>
+                  <div className="space-y-4 text-xs font-sans">
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>AI-Assisted Dev (Prompt Eng., ChatGPT, Claude, Copilot)</span>
+                        <span className="font-mono text-indigo-400">96%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500 rounded-full w-[96%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>Git, GitHub & GitLab (Code Reviews)</span>
+                        <span className="font-mono text-indigo-400">94%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500 rounded-full w-[94%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>Linux (Red Hat, CentOS, Ubuntu) & Windows Admin</span>
+                        <span className="font-mono text-indigo-400">90%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500 rounded-full w-[90%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between font-semibold mb-1">
+                        <span>Cisco Networking (LAN/WAN, IP Routing, Routers)</span>
+                        <span className="font-mono text-indigo-400">88%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500 rounded-full w-[88%]"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Work Experience Timeline */}
+          <section id="experience" className="py-24 border-t border-slate-800/80">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <p className="text-blue-400 font-mono text-xs uppercase tracking-widest">Career Milestones</p>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                  Professional Experience & Education
+                </h2>
+              </div>
+
+              <div className="max-w-4xl mx-auto space-y-6">
+                {PROFILE.experience.map((exp, idx) => (
+                  <div key={idx} className="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                      <div>
+                        <h3 className="text-xl font-bold text-white">{exp.role}</h3>
+                        <p className="text-blue-400 font-semibold text-sm">{exp.company} — {exp.location}</p>
+                      </div>
+                      <span className="text-xs font-mono text-slate-400">{exp.period}</span>
+                    </div>
+
+                    <p className="text-sm text-slate-300 leading-relaxed mb-4">
+                      {exp.summary}
+                    </p>
+
+                    <div className="space-y-2 text-xs sm:text-sm text-slate-300">
+                      {exp.achievements.map((ach, aIdx) => (
+                        <div key={aIdx} className="flex items-start gap-2">
+                          <span className="text-emerald-400 font-bold">✓</span>
+                          <span>{ach}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Education and Awards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <h4 className="font-bold text-white text-base mb-2">🎓 Education</h4>
+                    <p className="text-sm text-white font-semibold">B.S. Computer Science (2014 – 2018)</p>
+                    <p className="text-xs text-blue-400">Asian Institute of Computer Studies — Caloocan City</p>
+                  </div>
+                  <div className="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <h4 className="font-bold text-white text-base mb-2">🏆 Honors & Internships</h4>
+                    <p className="text-xs text-slate-300 font-semibold">• Best in Thesis (2018) — 3D Educational System</p>
+                    <p className="text-xs text-slate-400 mt-1">• Bayanihan St. John Cooperative (Loan & Accounting, 300 hrs)</p>
+                    <p className="text-xs text-slate-400">• Best Choice Inc. (Accounting, 300 hrs)</p>
+                  </div>
+                </div>
+
+                {/* CV Download Banner */}
+                <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-blue-950/40 to-slate-900 border border-blue-800/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-bold text-white text-base">Want to review John Matthew's complete CV?</h4>
+                    <p className="text-xs text-slate-300">Includes complete institutional references, project deliverables, and contact information.</p>
+                  </div>
+                  <button
+                    onClick={() => setIsResumeOpen(true)}
+                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shrink-0 shadow-md shadow-blue-500/20"
+                  >
+                    View & Download CV (.MD)
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Interactive Laravel & Mock API Inspector */}
+          <section id="api-explorer" className="py-24 border-t border-slate-800/80 bg-slate-950/60">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-indigo-400 font-mono text-xs uppercase tracking-wider">RESTful API Contract</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+                  Interactive Laravel MVC API Inspector
+                </h2>
+                <p className="mt-2 text-slate-300 text-sm">
+                  Test and inspect live JSON endpoints matching the Laravel backend MVC specifications.
+                </p>
+              </div>
+
+              <div className="max-w-5xl mx-auto rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
+                <div className="p-4 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-mono text-slate-400">Endpoint:</span>
+                    {[
+                      { path: '/api/projects', label: 'GET /api/projects' },
+                      { path: '/api/projects/pos-tms-philyra', label: 'GET /api/projects/pos-tms-philyra' },
+                      { path: '/api/profile', label: 'GET /api/profile' },
+                      { path: '/api/metrics', label: 'GET /api/metrics' }
+                    ].map(ep => (
+                      <button
+                        key={ep.path}
+                        onClick={() => handleTestApi(ep.path)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                          apiEndpoint === ep.path ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        {ep.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="text-xs font-mono text-emerald-400 font-semibold">200 OK (Live Mock Server)</span>
+                </div>
+
+                <div className="p-5 font-mono text-xs bg-[#0a0d14] max-h-[350px] overflow-y-auto">
+                  <pre className="text-blue-300 whitespace-pre-wrap">{apiOutput}</pre>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Contact Section */}
+          <section id="contact" className="py-24 border-t border-slate-800/80">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="max-w-3xl mx-auto text-center space-y-6">
+                <div>
+                  <span className="text-blue-400 font-mono text-xs uppercase tracking-wider">Get in Touch</span>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+                    Let's Build Something High-Impact
+                  </h2>
+                  <p className="mt-3 text-slate-300 text-sm sm:text-base">
+                    Seeking a Software Developer role where I can build reliable, user-focused systems that contribute to the growth of the organization.
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
+                  <div className="text-sm font-mono text-slate-300">
+                    Direct Email: <a href={`mailto:${PROFILE.email}`} className="text-blue-400 font-bold hover:underline">{PROFILE.email}</a>
+                  </div>
+                  <div className="text-sm font-mono text-slate-300">
+                    Phone / Mobile: <a href={`tel:${PROFILE.phone}`} className="text-indigo-400 font-bold hover:underline">{PROFILE.phone}</a>
+                  </div>
+                  <div className="text-xs font-mono text-slate-400">
+                    Location: {PROFILE.location} • Open to Remote / Hybrid / On-site
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      onClick={() => setIsChatOpen(true)}
+                      className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-blue-500/25"
+                    >
+                      Chat with AI Portfolio Agent
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="py-8 border-t border-slate-800/80 bg-slate-950 text-slate-400 text-xs text-center">
+            <p>© 2026 John Matthew A. Marcelo • Full Stack Developer (Laravel · Vue.js · React) • Bocaue, Bulacan, Philippines</p>
+          </footer>
+
+          {/* Floating AI Chatbot Button */}
+          {!isChatOpen && (
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-2xl shadow-blue-500/40 border border-blue-400/40 transition-all hover:scale-105 glow-blue"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-xs font-semibold">Ask John Matthew's AI</span>
+            </button>
+          )}
+
+          {/* Chat Window with LLM Settings Modal */}
+          {isChatOpen && (
+            <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[95vw] sm:w-[450px] h-[600px] max-h-[92vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+              
+              {/* Header */}
+              <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                    JM
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                      John Matthew's AI Agent
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                        {geminiApiKey ? 'Gemini AI' : 'Active'}
+                      </span>
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-mono">Pinnacle Projects & Full-Stack Context</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setIsChatOpen(false)} className="text-slate-400 hover:text-white text-sm font-bold p-1">
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              {/* Chat Message Scroll Area */}
+              <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0a0e17] text-xs">
+                {chatMessages.map(msg => (
+                  <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] p-3 rounded-2xl leading-relaxed whitespace-pre-wrap ${
+                      msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'
+                    }`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div className="text-slate-400 text-xs flex items-center gap-2">
+                    <span className="animate-spin inline-block">⏳</span>
+                    <span>Generating intelligent response via {(window.PORTFOLIO_GEMINI_KEY || geminiApiKey) ? 'Gemini AI' : 'Knowledge Engine'}...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Prompt Chips */}
+              <div className="px-3 py-2 bg-slate-950 border-t border-slate-800 overflow-x-auto whitespace-nowrap flex gap-1.5">
+                {chatChips.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(chip)}
+                    className="text-[10px] font-mono px-2 py-1 rounded-full bg-slate-800 text-blue-300 hover:bg-slate-700 shrink-0"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+
+              {/* Input Area */}
+              <div className="p-2.5 bg-slate-950 border-t border-slate-800 flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Ask about POS, CLDH-EI, Laravel, CV..."
+                  className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  onClick={() => handleSendMessage()}
+                  disabled={chatLoading || !chatInput.trim()}
+                  className="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-500 disabled:opacity-50"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Architectural Case Study Modal */}
+          {selectedProject && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                  <div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950 text-blue-300">{selectedProject.category}</span>
+                    <h3 className="text-xl font-bold text-white mt-1">{selectedProject.title}</h3>
+                    <p className="text-xs text-blue-400 font-mono">{selectedProject.client}</p>
+                  </div>
+                  <button onClick={() => setSelectedProject(null)} className="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{selectedProject.description}</p>
+
+                <div className="space-y-2">
+                  <h4 className="text-xs font-mono uppercase text-slate-400 font-bold">Key Architectural Highlights:</h4>
+                  {selectedProject.key_features.map((feat, i) => (
+                    <div key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                      <span className="text-blue-400 font-bold">•</span>
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+                  <button
+                    onClick={() => {
+                      const title = selectedProject.title;
+                      setSelectedProject(null);
+                      setIsChatOpen(true);
+                      handleSendMessage(`Explain the technical architecture of ${title}`);
+                    }}
+                    className="text-xs text-blue-400 hover:underline"
+                  >
+                    Ask AI Agent about this project →
+                  </button>
+                  <a
+                    href={selectedProject.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
+                  >
+                    Visit Live Portal ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Curriculum Vitae Modal */}
+          {isResumeOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full p-6 space-y-5 max-h-[85vh] overflow-y-auto text-xs text-slate-300">
+                <div className="flex justify-between items-start border-b border-slate-800 pb-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-white">{PROFILE.name}</h3>
+                    <p className="text-blue-400 font-mono text-xs">{PROFILE.title}</p>
+                    <p className="text-slate-400 text-[11px] mt-0.5">{PROFILE.email} • {PROFILE.phone} • {PROFILE.location}</p>
+                  </div>
+                  <button onClick={() => setIsResumeOpen(false)} className="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-white uppercase font-mono tracking-wider mb-1">Professional Summary</h4>
+                  <p className="leading-relaxed">{PROFILE.bio}</p>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-white uppercase font-mono tracking-wider mb-2">Technical Skills</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                      <strong className="text-white block">Front-end:</strong>
+                      <span>{PROFILE.skills.frontend.join(', ')}</span>
+                    </div>
+                    <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                      <strong className="text-white block">Back-end:</strong>
+                      <span>{PROFILE.skills.backend.join(', ')}</span>
+                    </div>
+                    <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                      <strong className="text-white block">Databases:</strong>
+                      <span>{PROFILE.skills.databases.join(', ')}</span>
+                    </div>
+                    <div className="p-2.5 bg-slate-950 rounded-lg border border-slate-800">
+                      <strong className="text-white block">AI & Productivity:</strong>
+                      <span>{PROFILE.skills.ai_tools.join(', ')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-white uppercase font-mono tracking-wider mb-2">Experience</h4>
+                  <div className="space-y-3">
+                    {PROFILE.experience.map((e, idx) => (
+                      <div key={idx} className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+                        <div className="flex justify-between">
+                          <strong className="text-white text-sm">{e.role} — {e.company}</strong>
+                          <span className="text-slate-400 font-mono text-[10px]">{e.period}</span>
+                        </div>
+                        <p className="text-slate-400 text-[11px]">{e.location}</p>
+                        <ul className="list-disc list-inside space-y-1 text-slate-300 pt-1">
+                          {e.achievements.map((a, aIdx) => (
+                            <li key={aIdx}>{a}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-white uppercase font-mono tracking-wider mb-1">Education & Honors</h4>
+                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <p className="font-bold text-white">B.S. Computer Science — Asian Institute of Computer Studies (2014 – 2018)</p>
+                    <p className="text-emerald-400 font-semibold mt-1">🏆 Best in Thesis (2018) — 3D Educational System</p>
+                    <p className="text-slate-400 mt-0.5">• Bayanihan St. John Cooperative & Best Choice Inc. Internships</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+                  <a
+                    href="mailto:jm.marcelo0212@gmail.com"
+                    className="text-blue-400 hover:underline font-mono text-xs"
+                  >
+                    Contact: jm.marcelo0212@gmail.com
+                  </a>
+                  <button onClick={() => setIsResumeOpen(false)} className="px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-700">
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
