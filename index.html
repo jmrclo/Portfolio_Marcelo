@@ -464,6 +464,205 @@ Answer recruiter and visitor inquiries with high technical professionalism.
       const [isResumeOpen, setIsResumeOpen] = useState(false);
       const [isChatOpen, setIsChatOpen] = useState(false);
 
+      // GitHub & Data Hub State
+      const [projectsList, setProjectsList] = useState(PINNACLE_PROJECTS);
+      const [profileData, setProfileData] = useState(PROFILE);
+      const [isDataHubOpen, setIsDataHubOpen] = useState(false);
+      const [activeHubTab, setActiveHubTab] = useState('github');
+      const [ghUser, setGhUser] = useState('');
+      const [ghRepos, setGhRepos] = useState([]);
+      const [ghLoading, setGhLoading] = useState(false);
+      const [ghError, setGhError] = useState('');
+      const [hubNotification, setHubNotification] = useState('');
+
+      const showNotification = (msg) => {
+        setHubNotification(msg);
+        setTimeout(() => setHubNotification(''), 4000);
+      };
+
+      const exportPortfolioJson = () => {
+        const data = {
+          exportedAt: new Date().toISOString(),
+          profile: profileData,
+          projects: projectsList
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `john-matthew-marcelo-portfolio-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification("Exported full portfolio JSON successfully!");
+      };
+
+      const exportMarkdownCv = () => {
+        const md = `# ${profileData.name}
+**${profileData.title}**
+- **Email:** ${profileData.email}
+- **Phone:** ${profileData.phone}
+- **Location:** ${profileData.location}
+- **Status:** ${profileData.availability}
+
+---
+
+## 👨‍💻 Professional Summary
+${profileData.bio}
+
+---
+
+## 🛠️ Technical Competencies
+- **Front-end:** ${profileData.skills.frontend.join(', ')}
+- **Back-end:** ${profileData.skills.backend.join(', ')}
+- **Databases:** ${profileData.skills.databases.join(', ')}
+- **AI & Productivity:** ${profileData.skills.ai_tools.join(', ')}
+- **Systems & Administration:** ${profileData.skills.systems.join(', ')}
+
+---
+
+## 💼 Work Experience
+${profileData.experience.map(e => `### ${e.role} — ${e.company}
+*${e.location} | ${e.period}*
+
+${e.achievements.map(a => `- ${a}`).join('\n')}`).join('\n\n')}
+
+---
+
+## 🎓 Education & Honors
+${profileData.education.map(ed => `- **${ed.degree}** — ${ed.institution} (${ed.period})`).join('\n')}
+${profileData.awards.map(aw => `- 🏆 **${aw.title}**: ${aw.desc}`).join('\n')}
+
+---
+
+## 🌟 Featured Client Projects (Pinnacle Technologies)
+${projectsList.map(p => `### [${p.title}](${p.url})
+**Client:** ${p.client} | **Category:** ${p.category} | **Status:** ${p.badge}
+
+${p.summary}
+
+- **Key Highlights:**
+${p.key_features.map(f => `  - ${f}`).join('\n')}
+- **Tech Stack:** ${p.tech_stack.join(', ')}
+- **Performance:** ${p.metrics.speed} (${p.metrics.users})
+`).join('\n\n')}
+`;
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `John_Matthew_Marcelo_Resume.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification("Exported CV in GitHub Markdown format!");
+      };
+
+      const exportProjectsJson = () => {
+        const blob = new Blob([JSON.stringify(projectsList, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pinnacle-projects.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification("Exported projects list JSON!");
+      };
+
+      const handleImportPortfolioJson = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const data = JSON.parse(evt.target.result);
+            let count = 0;
+            if (data.projects && Array.isArray(data.projects)) {
+              setProjectsList(data.projects);
+              count += data.projects.length;
+            } else if (Array.isArray(data)) {
+              setProjectsList(data);
+              count += data.length;
+            }
+            if (data.profile && typeof data.profile === 'object') {
+              setProfileData(data.profile);
+            }
+            showNotification(`Imported portfolio dataset successfully! (${count} projects loaded)`);
+          } catch (err) {
+            alert("Error parsing JSON: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      const resetToDefaults = () => {
+        setProjectsList(PINNACLE_PROJECTS);
+        setProfileData(PROFILE);
+        showNotification("Reset portfolio data to default!");
+      };
+
+      const handleFetchGithubRepos = async (overrideUser) => {
+        const target = (overrideUser || ghUser).trim();
+        if (!target) {
+          setGhError("Please enter a GitHub username.");
+          return;
+        }
+        setGhLoading(true);
+        setGhError('');
+        try {
+          const res = await fetch(`https://api.github.com/users/${encodeURIComponent(target)}/repos?sort=pushed&per_page=12`);
+          if (!res.ok) {
+            if (res.status === 404) throw new Error(`GitHub user "${target}" not found.`);
+            if (res.status === 403) throw new Error(`GitHub API rate limit reached. Try again later or use JSON Import.`);
+            throw new Error(`GitHub error: ${res.statusText}`);
+          }
+          const repos = await res.json();
+          if (!Array.isArray(repos) || repos.length === 0) {
+            setGhRepos([]);
+            setGhError(`No public repositories found for "${target}".`);
+          } else {
+            setGhRepos(repos);
+          }
+        } catch (err) {
+          setGhError(err.message);
+        } finally {
+          setGhLoading(false);
+        }
+      };
+
+      const handleImportGhRepoToProjects = (repo) => {
+        const exists = projectsList.some(p => p.url === repo.html_url || p.title.toLowerCase() === repo.name.toLowerCase());
+        if (exists) {
+          showNotification(`"${repo.name}" is already in your projects list.`);
+          return;
+        }
+        const newProj = {
+          id: Date.now() + Math.random(),
+          slug: repo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          title: repo.name.replace(/[-_]/g, ' ').toUpperCase(),
+          client: `GitHub (@${repo.owner?.login || ghUser})`,
+          url: repo.html_url,
+          category: "GitHub Repository",
+          badge: "Open Source",
+          summary: repo.description || "Public repository synced from GitHub.",
+          description: repo.description || `Public GitHub repository: ${repo.full_name}. Stars: ${repo.stargazers_count}, Forks: ${repo.forks_count}`,
+          key_features: [
+            `Primary Language: ${repo.language || 'Multi-language'}`,
+            `Visibility: ${repo.visibility || 'Public'}`,
+            `Stars: ${repo.stargazers_count} | Forks: ${repo.forks_count}`,
+            `Last Updated: ${new Date(repo.pushed_at).toLocaleDateString()}`
+          ],
+          tech_stack: [repo.language || 'Code', 'Git', 'GitHub', 'Open Source'],
+          metrics: { speed: `${repo.stargazers_count} Stars`, users: `${repo.forks_count} Forks` }
+        };
+        setProjectsList(prev => [newProj, ...prev]);
+        showNotification(`Added "${repo.name}" to your portfolio projects!`);
+      };
+
       // Centralized Gemini API Key (Loaded from window or localStorage)
       const [geminiApiKey, setGeminiApiKey] = useState(() => window.PORTFOLIO_GEMINI_KEY || localStorage.getItem('marcelo_gemini_key') || '');
 
@@ -490,10 +689,11 @@ Answer recruiter and visitor inquiries with high technical professionalism.
       const [apiEndpoint, setApiEndpoint] = useState('/api/projects');
       const [apiOutput, setApiOutput] = useState(JSON.stringify(PINNACLE_PROJECTS, null, 2));
 
-      const filteredProjects = PINNACLE_PROJECTS.filter(p => {
+      const filteredProjects = projectsList.filter(p => {
         if (filter === 'erp') return p.category.includes('ERP');
         if (filter === 'pos') return p.category.includes('POS') || p.category.includes('FinTech');
         if (filter === 'scale') return p.category.includes('Concurrency') || p.slug.includes('icct');
+        if (filter === 'github') return p.category.includes('GitHub');
         return true;
       });
 
@@ -635,6 +835,16 @@ Answer recruiter and visitor inquiries with high technical professionalism.
                   className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
                 >
                   CV / Resume
+                </button>
+                <button
+                  onClick={() => setIsDataHubOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 transition-all shadow-sm shadow-purple-500/10"
+                  title="Import/Export portfolio datasets or sync with GitHub"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  <span>GitHub & Data Hub</span>
                 </button>
               </div>
             </div>
@@ -819,13 +1029,14 @@ Answer recruiter and visitor inquiries with high technical professionalism.
                   </p>
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="flex flex-wrap gap-2">
+                {/* Filter Tabs & Import Button */}
+                <div className="flex flex-wrap items-center gap-2">
                   {[
-                    { id: 'all', label: 'All Projects (5)' },
-                    { id: 'erp', label: 'Academic ERPs (3)' },
-                    { id: 'pos', label: 'Cloud POS (1)' },
-                    { id: 'scale', label: 'High Concurrency (1)' }
+                    { id: 'all', label: `All Projects (${projectsList.length})` },
+                    { id: 'erp', label: `Academic ERPs (${projectsList.filter(p => p.category.includes('ERP')).length})` },
+                    { id: 'pos', label: `Cloud POS (${projectsList.filter(p => p.category.includes('POS') || p.category.includes('FinTech')).length})` },
+                    { id: 'scale', label: `High Concurrency (${projectsList.filter(p => p.category.includes('Concurrency') || p.slug.includes('icct')).length})` },
+                    ...(projectsList.some(p => p.category.includes('GitHub')) ? [{ id: 'github', label: `GitHub (${projectsList.filter(p => p.category.includes('GitHub')).length})` }] : [])
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -839,6 +1050,13 @@ Answer recruiter and visitor inquiries with high technical professionalism.
                       {tab.label}
                     </button>
                   ))}
+
+                  <button
+                    onClick={() => { setActiveHubTab('github'); setIsDataHubOpen(true); }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-900/40 hover:bg-purple-900/70 text-purple-300 border border-purple-700/50 flex items-center gap-1.5 transition-all shadow-sm"
+                  >
+                    <span>+ Sync GitHub Repos</span>
+                  </button>
                 </div>
               </div>
 
@@ -1436,6 +1654,344 @@ Answer recruiter and visitor inquiries with high technical professionalism.
                     Close
                   </button>
                 </div>
+              </div>
+            </div>
+          {/* Floating Toast Notification */}
+          {hubNotification && (
+            <div className="fixed bottom-6 left-6 z-50 px-4 py-2.5 rounded-xl bg-purple-950/90 border border-purple-500/50 text-purple-200 text-xs shadow-2xl flex items-center gap-2 backdrop-blur-md animate-bounce">
+              <span>✨</span>
+              <span>{hubNotification}</span>
+            </div>
+          )}
+
+          {/* GitHub & Portfolio Data Hub Modal */}
+          {isDataHubOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
+              <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-4xl w-full flex flex-col max-h-[90vh] overflow-hidden shadow-2xl">
+                
+                {/* Modal Header */}
+                <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        GitHub & Data Hub
+                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          Import & Export
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400">Import/export portfolio datasets, sync public GitHub repos, or deploy via GitHub Pages.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsDataHubOpen(false)}
+                    className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-slate-800 bg-slate-950/40 px-4 sm:px-6 pt-2 gap-2 overflow-x-auto text-xs font-semibold">
+                  {[
+                    { id: 'github', label: '🐙 GitHub Sync & Repos' },
+                    { id: 'export', label: '📤 Export Portfolio' },
+                    { id: 'import', label: '📥 Import Portfolio' },
+                    { id: 'deploy', label: '🚀 Deploy to GitHub' }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveHubTab(tab.id)}
+                      className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
+                        activeHubTab === tab.id
+                          ? 'border-purple-500 text-purple-400 font-bold'
+                          : 'border-transparent text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tab Body */}
+                <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 text-slate-300 text-xs">
+                  
+                  {/* Tab 1: GitHub Sync */}
+                  {activeHubTab === 'github' && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-800/40">
+                        <h4 className="font-bold text-white text-sm mb-1">Import Public Repositories from GitHub</h4>
+                        <p className="text-slate-300 text-xs leading-relaxed">
+                          Connect directly with GitHub's public REST API. Enter your GitHub username to fetch repositories and import them into your live portfolio project showcase.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={ghUser}
+                            onChange={(e) => setGhUser(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleFetchGithubRepos()}
+                            placeholder="Enter your GitHub username (e.g. jm-marcelo0212)"
+                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                        <button
+                          onClick={() => handleFetchGithubRepos()}
+                          disabled={ghLoading}
+                          className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {ghLoading ? (
+                            <>
+                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                              <span>Fetching...</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                              </svg>
+                              <span>Fetch Repositories</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {ghError && (
+                        <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
+                          ⚠️ {ghError}
+                        </div>
+                      )}
+
+                      {ghRepos.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-white font-semibold">Found {ghRepos.length} Repositories:</span>
+                            <span className="text-slate-400 font-mono text-[11px]">Click "+ Import" to add any project to your live showcase</span>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1">
+                            {ghRepos.map(repo => {
+                              const isImported = projectsList.some(p => p.url === repo.html_url);
+                              return (
+                                <div key={repo.id} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-2 hover:border-slate-700 transition-colors">
+                                  <div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-bold text-white text-xs truncate max-w-[180px]">{repo.name}</span>
+                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                                        {repo.language || 'Code'}
+                                      </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                                      {repo.description || 'Public GitHub repository'}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-[11px] font-mono text-slate-400">
+                                    <div className="flex items-center gap-3">
+                                      <span>⭐ {repo.stargazers_count}</span>
+                                      <span>🍴 {repo.forks_count}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <a
+                                        href={repo.html_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-400 hover:underline"
+                                      >
+                                        GitHub ↗
+                                      </a>
+                                      <button
+                                        onClick={() => handleImportGhRepoToProjects(repo)}
+                                        disabled={isImported}
+                                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
+                                          isImported
+                                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800 cursor-default'
+                                            : 'bg-purple-600 hover:bg-purple-500 text-white'
+                                        }`}
+                                      >
+                                        {isImported ? '✓ In Portfolio' : '+ Import'}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Tab 2: Export Data */}
+                  {activeHubTab === 'export' && (
+                    <div className="space-y-4">
+                      <p className="text-slate-300 text-xs">
+                        Export your portfolio data into standard portable files. Download your complete configuration as JSON, or generate a GitHub-formatted Markdown CV ready for your profile README.
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        
+                        {/* Card 1 */}
+                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1">
+                            <span className="text-2xl">📦</span>
+                            <h4 className="font-bold text-white text-sm">Full Portfolio JSON</h4>
+                            <p className="text-slate-400 text-[11px]">
+                              Downloads all CV data, 5 Pinnacle client projects, technical skills, and milestones in a single portable JSON file.
+                            </p>
+                          </div>
+                          <button
+                            onClick={exportPortfolioJson}
+                            className="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>⬇️ Download JSON</span>
+                          </button>
+                        </div>
+
+                        {/* Card 2 */}
+                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1">
+                            <span className="text-2xl">📄</span>
+                            <h4 className="font-bold text-white text-sm">Markdown CV / Resume</h4>
+                            <p className="text-slate-400 text-[11px]">
+                              Generates a clean GitHub Flavored Markdown resume (<code className="text-blue-400">README.md</code>) for job applications or your GitHub profile.
+                            </p>
+                          </div>
+                          <button
+                            onClick={exportMarkdownCv}
+                            className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>⬇️ Download CV (.md)</span>
+                          </button>
+                        </div>
+
+                        {/* Card 3 */}
+                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+                          <div className="space-y-1">
+                            <span className="text-2xl">🏛️</span>
+                            <h4 className="font-bold text-white text-sm">Projects Dataset</h4>
+                            <p className="text-slate-400 text-[11px]">
+                              Exports the architectural case studies, metrics, and production links for all client projects in JSON format.
+                            </p>
+                          </div>
+                          <button
+                            onClick={exportProjectsJson}
+                            className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <span>⬇️ Download Projects</span>
+                          </button>
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab 3: Import Data */}
+                  {activeHubTab === 'import' && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-800/40">
+                        <h4 className="font-bold text-white text-sm mb-1">Import Portfolio JSON File</h4>
+                        <p className="text-slate-300 text-xs leading-relaxed">
+                          Upload any exported portfolio JSON file to dynamically update your bio, skills, and project showcase in real time without reloading.
+                        </p>
+                      </div>
+
+                      <div className="p-6 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/50 flex flex-col items-center justify-center text-center space-y-3">
+                        <span className="text-3xl">📂</span>
+                        <div>
+                          <p className="font-bold text-white text-sm">Choose Portfolio JSON File</p>
+                          <p className="text-slate-400 text-[11px] mt-0.5">Supports .json files exported from this portfolio</p>
+                        </div>
+                        <input
+                          type="file"
+                          accept=".json"
+                          onChange={handleImportPortfolioJson}
+                          className="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2">
+                        <span className="text-slate-400 text-[11px]">Want to revert to John Matthew's original portfolio?</span>
+                        <button
+                          onClick={resetToDefaults}
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+                        >
+                          Reset to Original Defaults
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tab 4: Deploy to GitHub */}
+                  {activeHubTab === 'deploy' && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-800/40">
+                        <h4 className="font-bold text-white text-sm mb-1">Push to GitHub & Publish Free Global Website</h4>
+                        <p className="text-slate-300 text-xs leading-relaxed">
+                          Your portfolio is completely ready for GitHub and GitHub Pages. Anyone on the internet will be able to view and interact with your portfolio, client projects, and AI agent.
+                        </p>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                          <div className="flex items-center gap-2 font-bold text-white">
+                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">1</span>
+                            <span>Create an empty repository on GitHub</span>
+                          </div>
+                          <p className="text-slate-400 text-[11px] pl-7">
+                            Go to <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">github.com/new</a>, name it <code className="text-white">marcelo-portfolio</code> (Public), and leave "Add a README" unchecked.
+                          </p>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                          <div className="flex items-center gap-2 font-bold text-white">
+                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">2</span>
+                            <span>Push your repository to GitHub</span>
+                          </div>
+                          <div className="pl-7">
+                            <p className="text-slate-400 text-[11px] mb-1.5">Run this in your PowerShell terminal:</p>
+                            <pre className="p-2.5 rounded-lg bg-black/70 border border-slate-800 font-mono text-[11px] text-blue-300 overflow-x-auto select-all">
+cd "C:\Users\JM\.gemini\antigravity\scratch\Marcelo portfolio"
+git remote add origin https://github.com/&lt;YOUR_USERNAME&gt;/marcelo-portfolio.git
+git push -u origin main
+                            </pre>
+                          </div>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                          <div className="flex items-center gap-2 font-bold text-white">
+                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">3</span>
+                            <span>Enable Free GitHub Pages Hosting</span>
+                          </div>
+                          <p className="text-slate-400 text-[11px] pl-7 leading-relaxed">
+                            Inside your GitHub repository, click <strong>Settings</strong> → <strong>Pages</strong> → set Branch to <strong>main</strong> and folder to <strong>/ (root)</strong> → Click <strong>Save</strong>.
+                            <br />
+                            Your portfolio will be live at: <span className="text-emerald-400 font-mono font-bold">https://&lt;YOUR_USERNAME&gt;.github.io/marcelo-portfolio/</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* Modal Footer */}
+                <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex justify-between items-center">
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    {hubNotification || 'Connected to GitHub REST API & Local Knowledge Engine'}
+                  </span>
+                  <button
+                    onClick={() => setIsDataHubOpen(false)}
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition-colors"
+                  >
+                    Close Hub
+                  </button>
+                </div>
+
               </div>
             </div>
           )}
