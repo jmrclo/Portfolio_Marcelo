@@ -16,6 +16,7 @@
 
   <!-- Central Portfolio AI Configuration -->
   <script src="config.js"></script>
+  <script src="config.local.js"></script>
 
   <!-- React 18 & Babel Standalone -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -92,6 +93,7 @@
       title: "Software Developer | Full Stack (Laravel · Vue.js · React)",
       email: "jm.marcelo0212@gmail.com",
       phone: "0908-519-2226",
+      birthdate: "February 12, 1996",
       location: "Bocaue, Bulacan, Philippines",
       availability: "Available for Software Developer Roles (Remote / Hybrid / On-site)",
       bio: "Full Stack Developer with 3+ years of experience building responsive web applications using Laravel, Vue.js, React, and MySQL, backed by 4+ years in IT support and systems administration. Skilled in designing RESTful APIs, building component-based user interfaces, and using modern AI tools to write, debug, and document code more efficiently. Seeking a Software Developer role where I can build reliable, user-focused systems that contribute to the growth of the organization.",
@@ -254,40 +256,102 @@
     ];
 
     const LLM_SYSTEM_PROMPT = `
-You are the AI Assistant representing John Matthew A. Marcelo, a Full Stack Developer (Laravel · Vue.js · React) based in Bocaue, Bulacan, Philippines.
-Email: jm.marcelo0212@gmail.com | Phone: 0908-519-2226
-Experience:
-- Full Stack Developer at Pinnacle Technologies Inc. (March 2023 - Present)
-  Client Systems:
-  1. CLDH-EI AIMS: https://cldh-ei.pinnacle.edu.ph/admin/login
-  2. TMS AIMS: https://tms.pinnacle.edu.ph/admin/login
-  3. Bernardo College AIMS: https://bc.pinnacle.edu.ph/admin/login
-  4. Philyra Cloud POS TMS: https://pos-tms.philyra.cloud/login (<120ms latency, SHA-512 security)
-  5. ICCT Colleges SMS: https://sms.icct.edu.ph/login (50,000+ students, 15,000+ daily admissions)
-- Technical Support & Systems Administration (Sept 2018 - March 2023): Cisco networking (LAN/WAN), Linux/Windows servers.
-- Education: B.S. Computer Science from Asian Institute of Computer Studies (2014-2018), Best in Thesis (3D Educational System).
-Answer recruiter and visitor inquiries with high technical professionalism.
+You are the interactive AI Representative for John Matthew A. Marcelo's professional developer portfolio.
+Your role is to answer questions from recruiters, hiring managers, and visitors about John Matthew conversationally, accurately, and insightfully.
+
+Personal & Profile Details:
+- Name: John Matthew A. Marcelo
+- Birthdate: February 12, 1996 (Bocaue, Bulacan, Philippines)
+- Age: 30 years old
+- Email: jm.marcelo0212@gmail.com ('0212' signifies February 12)
+- Phone: 0908-519-2226
+- Location: Bocaue, Bulacan, Philippines (Open to Remote, Hybrid, or On-site roles)
+- Status: Actively available for Software Developer / Full Stack Engineer opportunities
+
+Professional Background (7+ Total Years in Technology):
+1. Full Stack Developer at Pinnacle Technologies Inc. (March 2023 – Present):
+   - Tech Stack: PHP, Laravel (MVC), Vue.js, React, MySQL, RESTful APIs, Tailwind CSS, Bootstrap.
+   - 5 Live Production Client Systems:
+     * CLDH-EI AIMS: Academic ERP for Central Luzon Doctor's Hospital Educational Institution (granular RBAC, grade encoding, NPC privacy compliance) -> https://cldh-ei.pinnacle.edu.ph/admin/login
+     * TMS AIMS: Tarlac Montessori School ERP (DepEd quarterly grading, Form 137/138 batch PDF export, tuition ledgers) -> https://tms.pinnacle.edu.ph/admin/login
+     * Bernardo College AIMS: Registrar, dean operations, prerequisite checking, faculty loading -> https://bc.pinnacle.edu.ph/admin/login
+     * Philyra Cloud POS & Inventory: Sub-120ms barcode scanning latency, client-side SHA-512 cryptographic hashing, multi-branch MySQL row locks -> https://pos-tms.philyra.cloud/login
+     * ICCT Colleges SMS: High-concurrency student management system serving 50,000+ students and 15,000+ peak daily admissions -> https://sms.icct.edu.ph/login
+2. Technical Support & Systems Administration (Sept 2018 – March 2023):
+   - 4+ years managing Cisco networking (LAN/WAN), Linux (CentOS, Red Hat, Ubuntu) and Windows server environments, hardware diagnostics, and enterprise security.
+
+Education & Honors:
+- B.S. in Computer Science (2014 – 2018) — Asian Institute of Computer Studies (AICS), Caloocan City.
+- 🏆 Best in Thesis (2018): '3D Educational System' (interactive software engineering & design)
+- Internships: Bayanihan St. John Multipurpose Cooperative (300 hrs) & Best Choice Inc. (300 hrs).
+
+Guidelines:
+- Answer with technical clarity when asked about architectures, databases, and frameworks.
+- If asked about personal facts like birthdate, birthday, age, or location, provide the exact facts directly (born February 12, 1996 in Bocaue, Bulacan).
 `;
 
     // Multi-Provider Live LLM Call Function
     async function executeLiveLlm(provider, apiKey, model, userQuery, messageHistory) {
       if (provider === 'gemini') {
-        const gemModel = model || 'gemini-1.5-flash';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${gemModel}:generateContent?key=${apiKey}`;
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: LLM_SYSTEM_PROMPT }] },
-            contents: messageHistory.map(m => ({
-              role: m.sender === 'user' ? 'user' : 'model',
+        const cleanKey = (apiKey || '').trim();
+        
+        // Gemini API strict requirements:
+        // 1. First content turn must have role: 'user'
+        // 2. Roles must strictly alternate between 'user' and 'model'
+        const validContents = [];
+        let lastRole = null;
+        for (const m of (messageHistory || [])) {
+          const role = m.sender === 'user' ? 'user' : 'model';
+          // Skip initial greeting turn if it's from model
+          if (validContents.length === 0 && role === 'model') continue;
+          if (role === lastRole) {
+            validContents[validContents.length - 1].parts[0].text += "\n\n" + m.text;
+          } else {
+            validContents.push({
+              role: role,
               parts: [{ text: m.text }]
-            }))
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error?.message || `Gemini API returned status ${res.status}`);
-        return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            });
+            lastRole = role;
+          }
+        }
+
+        // Ensure user's current question is at the end with role 'user'
+        if (validContents.length === 0 || validContents[validContents.length - 1].role !== 'user') {
+          validContents.push({ role: 'user', parts: [{ text: userQuery }] });
+        }
+
+        // Priority candidate models: latest Gemini 3.6 Flash followed by fallbacks
+        const candidateModels = [model || 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-latest'];
+        let lastError = null;
+
+        for (const m of candidateModels) {
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                systemInstruction: { parts: [{ text: LLM_SYSTEM_PROMPT }] },
+                contents: validContents,
+                generationConfig: {
+                  temperature: 0.7,
+                  maxOutputTokens: 1000
+                }
+              })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.error?.message || `Gemini API (${m}) returned status ${res.status}`);
+            }
+            const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResponse) return textResponse;
+          } catch (err) {
+            lastError = err;
+            console.warn(`Gemini model ${m} call failed:`, err.message);
+          }
+        }
+
+        throw lastError || new Error("Gemini API call failed across all candidate models.");
       }
 
       if (provider === 'openai') {
@@ -354,107 +418,104 @@ Answer recruiter and visitor inquiries with high technical professionalism.
     function resolveLocalKnowledge(q) {
       const text = q.toLowerCase().trim();
 
-      if (text.includes('contact') || text.includes('email') || text.includes('phone') || text.includes('reach') || text.includes('call') || text.includes('hire') || text.includes('location')) {
-        return `You can reach **John Matthew A. Marcelo** directly:\n\n` +
-          `• 📧 **Email:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com)\n` +
-          `• 📱 **Phone:** 0908-519-2226\n` +
-          `• 📍 **Location:** Bocaue, Bulacan, Philippines (Open to Remote / Hybrid / On-site roles)\n\n` +
-          `Feel free to reach out directly for full-stack software developer opportunities!`;
+      // Greetings
+      if (/^(hi|hello|hey|good\s*(morning|afternoon|evening)|what'?s\s*up|yo|sup)[\s!?.]*$/i.test(text)) {
+        return `👋 Hello! I am the **AI Portfolio Agent** for **John Matthew A. Marcelo**, a Full Stack Developer specializing in Laravel, Vue.js, and React.\n\nHow can I help you today? You can ask me about:\n• His **projects** at Pinnacle Technologies\n• His **technical skills** and experience\n• **Contact information** and availability\n• **Education** and achievements`;
       }
 
-      if (text.includes('who is') || text.includes('what is') || text.includes('about') || text.includes('bio') || text.includes('developer') || text === 'jm' || text === 'john' || text === 'john matthew') {
-        return `**John Matthew A. Marcelo** is a **Full Stack Software Developer** with 3+ years of experience in **Laravel, Vue.js, React, and MySQL**, backed by 4+ years in IT support and systems administration.\n\n` +
-          `• **Current Role:** Full Stack Developer at **Pinnacle Technologies Inc.** (since March 2023).\n` +
-          `• **Flagship Client Portals:** Contributed to CLDH-EI AIMS, TMS AIMS, Bernardo College, Philyra Cloud POS, and ICCT Colleges SMS.\n` +
-          `• **Academic Honor:** 🏆 **Best in Thesis Award (2018)** for '3D Educational System' (B.S. Computer Science, AICS Caloocan).\n` +
-          `• **Contact:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) • 0908-519-2226\n\n` +
-          `Ask me about any of his projects, technical stack, or how to get in touch!`;
+      // Thank you / bye
+      if (/^(thanks?|thank\s*you|bye|goodbye|see\s*you|take\s*care)[\s!?.]*$/i.test(text)) {
+        return `You're welcome! 😊 If you have any more questions about **John Matthew A. Marcelo** or his work, feel free to ask anytime.\n\n📧 **Email:** jm.marcelo0212@gmail.com\n📱 **Phone:** 0908-519-2226`;
       }
 
-      if (text.includes('pos') || text.includes('philyra') || text.includes('point of sale') || text.includes('barcode')) {
-        return `**Philyra Cloud Point of Sale (POS) & Inventory System** is a flagship cloud platform John Matthew contributed to at Pinnacle Technologies.\n\n` +
-          `• **Sub-120ms Latency:** Instant barcode scanning & checkout execution.\n` +
-          `• **SHA-512 Security:** Client-side cryptographic hashing preventing man-in-the-middle tampering.\n` +
-          `• **Multi-Store Inventory:** Real-time stock decrementing with ACID-compliant MySQL row locks.\n` +
-          `• **Stack:** Laravel MVC, Codebase UI, Thermal Receipt Driver.\n\n` +
-          `👉 [Explore Live POS Deployment](https://pos-tms.philyra.cloud/login)`;
+      // Contact / hire / reach
+      if (text.includes('contact') || text.includes('email') || text.includes('phone') || text.includes('reach') || text.includes('call') || text.includes('hire') || text.includes('number') || text.includes('get in touch') || text.includes('connect')) {
+        return `You can reach **John Matthew A. Marcelo** directly:\n\n• 📧 **Email:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com)\n• 📱 **Phone:** 0908-519-2226\n• 📍 **Location:** Bocaue, Bulacan, Philippines (Open to Remote / Hybrid / On-site roles)\n\nFeel free to reach out directly for full-stack software developer opportunities!`;
       }
 
-      if (text.includes('cldh') || text.includes('hospital') || text.includes('doctor')) {
-        return `**CLDH-EI Academic Information Management System (AIMS)** serves Central Luzon Doctor's Hospital Educational Institution.\n\n` +
-          `• Orchestrates admissions, grading, faculty evaluations, and registrar operations.\n` +
-          `• Granular **Role-Based Access Control (RBAC)** across Super Admins, Deans, and Faculty.\n` +
-          `• Fully compliant with **National Privacy Commission (NPC)** guidelines.\n\n` +
-          `👉 [Explore Live CLDH-EI Portal](https://cldh-ei.pinnacle.edu.ph/admin/login)`;
+      // Who is / about / bio / name / tell me about / introduce
+      if (text.includes('who is') || text.includes('who are') || text.includes('about') || text.includes('bio') || text.includes('introduce') || text.includes('tell me') || text === 'jm' || text === 'john' || text === 'john matthew' || text.includes('yourself') || text.includes('what do you do') || text.includes('who') || text.includes('summary') || text.includes('profile')) {
+        return `**John Matthew A. Marcelo** is a **Full Stack Software Developer** with 3+ years of experience in **Laravel, Vue.js, React, and MySQL**, backed by 4+ years in IT support and systems administration.\n\n• **Current Role:** Full Stack Developer at **Pinnacle Technologies Inc.** (since March 2023).\n• **Flagship Client Portals:** Contributed to CLDH-EI AIMS, TMS AIMS, Bernardo College, Philyra Cloud POS, and ICCT Colleges SMS.\n• **Academic Honor:** 🏆 **Best in Thesis Award (2018)** for '3D Educational System' (B.S. Computer Science, AICS Caloocan).\n• **Contact:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) • 0908-519-2226\n\nAsk me about any of his projects, technical stack, or how to get in touch!`;
       }
 
+      // Projects / what did you build / portfolio / work / pinnacle projects
+      if (text.includes('project') || text.includes('build') || text.includes('portfolio') || text.includes('pinnacle') || text.includes('client') || text.includes('work') || text.includes('system') || text.includes('what have') || text.includes('what did') || text.includes('accomplish') || text.includes('deliver')) {
+        return `**John Matthew's Key Projects at Pinnacle Technologies Inc.:**\n\n1. 🏥 **CLDH-EI AIMS** — Academic management for Central Luzon Doctor's Hospital Educational Institution (RBAC, grade encoding, NPC-compliant)\n   👉 [Live Portal](https://cldh-ei.pinnacle.edu.ph/admin/login)\n\n2. 🎓 **TMS AIMS** — Tarlac Montessori School ERP (DepEd-compliant grading, tuition billing)\n   👉 [Live Portal](https://tms.pinnacle.edu.ph/admin/login)\n\n3. 📚 **Bernardo College AIMS** — Registrar & degree audit automation\n   👉 [Live Portal](https://bc.pinnacle.edu.ph/admin/login)\n\n4. 🛒 **Philyra Cloud POS** — Point of Sale with <120ms latency, SHA-512 security\n   👉 [Live Portal](https://pos-tms.philyra.cloud/login)\n\n5. 🏫 **ICCT Colleges SMS** — 50,000+ students, 15,000+ daily concurrent admissions\n   👉 [Live Portal](https://sms.icct.edu.ph/login)\n\nAll built with **Laravel, PHP, MySQL, React/Vue.js**. Ask me about any specific project!`;
+      }
+
+      // POS / Philyra
+      if (text.includes('pos') || text.includes('philyra') || text.includes('point of sale') || text.includes('barcode') || text.includes('inventory') || text.includes('cashier')) {
+        return `**Philyra Cloud Point of Sale (POS) & Inventory System** is a flagship cloud platform John Matthew contributed to at Pinnacle Technologies.\n\n• **Sub-120ms Latency:** Instant barcode scanning & checkout execution.\n• **SHA-512 Security:** Client-side cryptographic hashing preventing man-in-the-middle tampering.\n• **Multi-Store Inventory:** Real-time stock decrementing with ACID-compliant MySQL row locks.\n• **Stack:** Laravel MVC, Codebase UI, Thermal Receipt Driver.\n\n👉 [Explore Live POS Deployment](https://pos-tms.philyra.cloud/login)`;
+      }
+
+      // CLDH
+      if (text.includes('cldh') || text.includes('hospital') || text.includes('doctor') || text.includes('central luzon')) {
+        return `**CLDH-EI Academic Information Management System (AIMS)** serves Central Luzon Doctor's Hospital Educational Institution.\n\n• Orchestrates admissions, grading, faculty evaluations, and registrar operations.\n• Granular **Role-Based Access Control (RBAC)** across Super Admins, Deans, and Faculty.\n• Fully compliant with **National Privacy Commission (NPC)** guidelines.\n\n👉 [Explore Live CLDH-EI Portal](https://cldh-ei.pinnacle.edu.ph/admin/login)`;
+      }
+
+      // TMS
       if (text.includes('tms') || text.includes('montessori') || text.includes('tarlac')) {
-        return `**Tarlac Montessori School AIMS** is an educational management ERP custom-tailored for Montessori & K-12 operations.\n\n` +
-          `• DepEd-compliant quarterly grading matrices with automated Form 137/138 batch PDF exports.\n` +
-          `• Complete student financial ledgers, tuition installments, and cashier reconciliation.\n` +
-          `• Modular CSS-variable theming engine built on AdminLTE.\n\n` +
-          `👉 [Explore Live TMS Portal](https://tms.pinnacle.edu.ph/admin/login)`;
+        return `**Tarlac Montessori School AIMS** is an educational management ERP custom-tailored for Montessori & K-12 operations.\n\n• DepEd-compliant quarterly grading matrices with automated Form 137/138 batch PDF exports.\n• Complete student financial ledgers, tuition installments, and cashier reconciliation.\n• Modular CSS-variable theming engine built on AdminLTE.\n\n👉 [Explore Live TMS Portal](https://tms.pinnacle.edu.ph/admin/login)`;
       }
 
-      if (text.includes('bernardo') || text.includes('bc ') || text.includes('bc.pinnacle')) {
-        return `**Bernardo College AIMS** is an academic ERP designed to automate registrar and dean operations.\n\n` +
-          `• Degree prerequisite auditing, room allocation, faculty loading, and online student clearances.\n\n` +
-          `👉 [Explore Live BC Portal](https://bc.pinnacle.edu.ph/admin/login)`;
+      // Bernardo College
+      if (text.includes('bernardo') || text.includes('bc ') || text.includes('bc.pinnacle') || text.includes('college aims')) {
+        return `**Bernardo College AIMS** is an academic ERP designed to automate registrar and dean operations.\n\n• Degree prerequisite auditing, room allocation, faculty loading, and online student clearances.\n• Unified password reset and self-service account recovery system.\n\n👉 [Explore Live BC Portal](https://bc.pinnacle.edu.ph/admin/login)`;
       }
 
-      if (text.includes('icct') || text.includes('sms') || text.includes('student management') || text.includes('concurrency')) {
-        return `**ICCT Colleges Student Management System (SMS)** is a high-concurrency web platform serving 50,000+ students.\n\n` +
-          `• Engineered to withstand **15,000+ daily concurrent applicant transactions** during enrollment peak.\n` +
-          `• Multi-campus branch architecture with automated student number generation.\n` +
-          `• Optimized with MySQL read replicas and Cloudflare rate limiting.\n\n` +
-          `👉 [Explore Live ICCT Portal](https://sms.icct.edu.ph/login)`;
+      // ICCT
+      if (text.includes('icct') || text.includes('student management') || text.includes('concurrency') || text.includes('50,000') || text.includes('50000') || text.includes('15,000') || text.includes('15000') || text.includes('enrollment')) {
+        return `**ICCT Colleges Student Management System (SMS)** is a high-concurrency web platform serving 50,000+ students.\n\n• Engineered to withstand **15,000+ daily concurrent applicant transactions** during enrollment peak.\n• Multi-campus branch architecture with automated student number generation.\n• Optimized with MySQL read replicas and Cloudflare rate limiting.\n\n👉 [Explore Live ICCT Portal](https://sms.icct.edu.ph/login)`;
       }
 
-      if (text.includes('skills') || text.includes('stack') || text.includes('laravel') || text.includes('vue') || text.includes('react') || text.includes('mysql') || text.includes('php')) {
-        return `**John Matthew's Core Technical Skills:**\n\n` +
-          `• **Front-End:** React, Vue.js, JavaScript (ES6+), HTML5, CSS3, Bootstrap, Tailwind CSS\n` +
-          `• **Back-End:** PHP, Laravel Framework, RESTful APIs, Java, C#, VB.NET\n` +
-          `• **Databases:** MySQL (Schema optimization & query tuning), Oracle, MongoDB\n` +
-          `• **AI Tools:** Prompt Engineering, ChatGPT, Claude, GitHub Copilot`;
+      // Skills / tech stack / technologies / tools
+      if (text.includes('skill') || text.includes('stack') || text.includes('laravel') || text.includes('vue') || text.includes('react') || text.includes('mysql') || text.includes('php') || text.includes('technolog') || text.includes('tool') || text.includes('language') || text.includes('framework') || text.includes('database') || text.includes('frontend') || text.includes('front-end') || text.includes('backend') || text.includes('back-end') || text.includes('what can') || text.includes('expertise')) {
+        return `**John Matthew's Core Technical Skills:**\n\n• **Front-End:** React, Vue.js, JavaScript (ES6+), HTML5, CSS3, Bootstrap, Tailwind CSS\n• **Back-End:** PHP, Laravel Framework, RESTful APIs, Java, C#, VB.NET\n• **Databases:** MySQL (Schema optimization & query tuning), Oracle, MongoDB\n• **AI Tools:** Prompt Engineering, ChatGPT, Claude, GitHub Copilot\n• **Systems:** Git/GitHub/GitLab, Linux (Red Hat, CentOS, Ubuntu), Windows Admin, Cisco Networking (LAN/WAN)\n\n**3+ years** full-stack development + **4+ years** IT systems admin = **7+ total years** in tech.`;
       }
 
-      if (text.includes('education') || text.includes('thesis') || text.includes('degree') || text.includes('award')) {
-        return `**Education & Honors:**\n\n` +
-          `• **B.S. in Computer Science (2014 – 2018)** — Asian Institute of Computer Studies, Caloocan City.\n` +
-          `• **🏆 Best in Thesis (2018):** '3D Educational System' — Recognized for technical excellence and interactive design.\n` +
-          `• **Internships:** Bayanihan St. John Cooperative (300 hrs) & Best Choice Inc. (300 hrs).`;
+      // Education / thesis / degree / award / school / college / university
+      if (text.includes('education') || text.includes('thesis') || text.includes('degree') || text.includes('award') || text.includes('school') || text.includes('college') || text.includes('university') || text.includes('graduate') || text.includes('studied') || text.includes('aics') || text.includes('asian institute')) {
+        return `**Education & Honors:**\n\n• **B.S. in Computer Science (2014 – 2018)** — Asian Institute of Computer Studies, Caloocan City.\n• **🏆 Best in Thesis (2018):** '3D Educational System' — Recognized for technical excellence and interactive design.\n• **Internships:** Bayanihan St. John Cooperative (300 hrs, Loan & Accounting) & Best Choice Inc. (300 hrs, Accounting).`;
       }
 
-      if (text.includes('age') || text.includes('how old') || text.includes('birthday') || text.includes('birth date') || text.includes('born') || text.includes('years old')) {
-        return `As an AI Portfolio Representative, I don't have an age, but **John Matthew A. Marcelo** is an experienced software developer who graduated with a B.S. in Computer Science in **2018** (winning **Best in Thesis**).\n\n` +
-          `He brings over **7+ total years of technology experience**:\n` +
-          `• **3+ years** as a Full Stack Developer (Laravel, Vue.js, React, MySQL) at Pinnacle Technologies Inc.\n` +
-          `• **4+ years** in Technical Support & Systems Administration\n\n` +
-          `Would you like to know more about his projects, technical stack, or how to contact him?`;
+      // Experience / career / years / how long / work history
+      if (text.includes('experience') || text.includes('career') || text.includes('how long') || text.includes('years') || text.includes('work history') || text.includes('background') || text.includes('resume') || text.includes('cv')) {
+        return `**John Matthew A. Marcelo's Professional Experience:**\n\n**Full Stack Developer — Pinnacle Technologies Inc.** (March 2023 – Present)\n• Build responsive UIs with React and Vue.js\n• Design server-side logic with Laravel, develop RESTful APIs\n• Create and optimize MySQL database structures\n• Delivered 5 production client systems: CLDH-EI, TMS, BC, Philyra POS, ICCT SMS\n\n**Technical Support & Systems Admin** (Sept 2018 – March 2023)\n• Hardware, networking (Cisco LAN/WAN), Linux/Windows servers\n• Security management, troubleshooting, and user training\n\n**Total:** 7+ years in technology roles.`;
       }
 
-      if (text.includes('why hire') || text.includes('why choose') || text.includes('strength') || text.includes('why should') || text.includes('hire you')) {
-        return `Here is what makes **John Matthew A. Marcelo** a strong candidate for Software Developer roles:\n\n` +
-          `1. **Full-Stack Proficiency:** Strong command of Laravel MVC, RESTful APIs, Vue.js, React, and MySQL database optimization.\n` +
-          `2. **Production-Proven at Scale:** Contributed to 5 live portals at Pinnacle Technologies, including the ICCT SMS supporting 15,000+ daily concurrent applicant transactions and Philyra POS with sub-120ms latency.\n` +
-          `3. **Systems & Security Depth:** 4+ years in IT systems administration gives him practical mastery of Linux servers, Cisco networking, and application security (SHA-512, RBAC, session protection).\n` +
-          `4. **AI-Driven Acceleration:** Actively leverages modern AI tools (GitHub Copilot, ChatGPT, Claude) to write cleaner, well-tested code faster.`;
+      // Birthday / birthdate / age / born
+      if (text.includes('birthdate') || text.includes('birthday') || text.includes('birth date') || text.includes('born') || text.includes('age') || text.includes('how old') || text.includes('years old')) {
+        return `**John Matthew A. Marcelo** was born on **February 12, 1996** in Bocaue, Bulacan, Philippines (notice the '0212' in his direct email: \`jm.marcelo0212@gmail.com\`).\n\n` +
+          `• **Age:** 30 years old\n` +
+          `• **Education:** Completed his B.S. in Computer Science in **2018** (Asian Institute of Computer Studies, Caloocan City), winning the **🏆 Best in Thesis Award** for his '3D Educational System'.\n` +
+          `• **Experience:** Over **7+ total years in technology**:\n` +
+          `  - **3+ years** as a Full Stack Developer (Laravel, Vue.js, React, MySQL) at Pinnacle Technologies Inc.\n` +
+          `  - **4+ years** in Technical Support & Systems Administration\n\n` +
+          `Feel free to ask about any of his 5 client systems, technical stack, or how to reach him!`;
       }
 
-      if (text.includes('available') || text.includes('availability') || text.includes('remote') || text.includes('hybrid') || text.includes('relocate') || text.includes('onsite')) {
-        return `**Availability & Work Preferences:**\n\n` +
-          `• **Status:** Actively available for Software Developer / Full Stack Engineer roles.\n` +
-          `• **Arrangements:** Open to **Remote**, **Hybrid**, or **On-site** positions.\n` +
-          `• **Base Location:** Bocaue, Bulacan, Philippines.\n` +
-          `• **Reach out:** Email [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) or call \`0908-519-2226\` to get in touch!`;
+      // Why hire / strengths
+      if (text.includes('why hire') || text.includes('why choose') || text.includes('strength') || text.includes('why should') || text.includes('hire you') || text.includes('advantage') || text.includes('what makes') || text.includes('stand out') || text.includes('unique') || text.includes('best candidate') || text.includes('why pick')) {
+        return `Here is what makes **John Matthew A. Marcelo** a strong candidate for Software Developer roles:\n\n1. **Full-Stack Proficiency:** Strong command of Laravel MVC, RESTful APIs, Vue.js, React, and MySQL database optimization.\n2. **Production-Proven at Scale:** Contributed to 5 live portals at Pinnacle Technologies, including the ICCT SMS supporting 15,000+ daily concurrent applicant transactions and Philyra POS with sub-120ms latency.\n3. **Systems & Security Depth:** 4+ years in IT systems administration gives him practical mastery of Linux servers, Cisco networking, and application security (SHA-512, RBAC, session protection).\n4. **AI-Driven Acceleration:** Actively leverages modern AI tools (GitHub Copilot, ChatGPT, Claude) to write cleaner, well-tested code faster.\n5. **Academic Excellence:** Best in Thesis Award (2018) demonstrates strong research and engineering discipline.`;
       }
 
-      return `Hello! I am the **AI Portfolio Agent** for **John Matthew A. Marcelo**.\n\n` +
-        `Ask me about:\n` +
-        `• **Who is John Matthew**: Full Stack Developer (Laravel · Vue.js · React)\n` +
-        `• **5 Pinnacle client projects**: CLDH-EI, TMS, Bernardo College, Philyra POS, and ICCT SMS\n` +
-        `• **Technical stack**: REST APIs, MySQL optimization, and React/Vue\n` +
-        `• **Contact information**: Email (\`jm.marcelo0212@gmail.com\`) and phone (\`0908-519-2226\`)`;
+      // Availability / remote / location
+      if (text.includes('available') || text.includes('availability') || text.includes('remote') || text.includes('hybrid') || text.includes('relocate') || text.includes('onsite') || text.includes('on-site') || text.includes('location') || text.includes('where') || text.includes('based') || text.includes('from')) {
+        return `**Availability & Work Preferences:**\n\n• **Status:** Actively available for Software Developer / Full Stack Engineer roles.\n• **Arrangements:** Open to **Remote**, **Hybrid**, or **On-site** positions.\n• **Base Location:** Bocaue, Bulacan, Philippines.\n• **Reach out:** Email [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com) or call 0908-519-2226 to get in touch!`;
+      }
+
+      // Salary (graceful deflection)
+      if (text.includes('salary') || text.includes('rate') || text.includes('compensation') || text.includes('how much') || text.includes('pay') || text.includes('pricing')) {
+        return `Salary expectations are best discussed directly with **John Matthew**. He is open to competitive offers aligned with Full Stack Developer market rates in the Philippines.\n\n📧 **Email:** [jm.marcelo0212@gmail.com](mailto:jm.marcelo0212@gmail.com)\n📱 **Phone:** 0908-519-2226\n\nFeel free to reach out to discuss compensation and opportunities!`;
+      }
+
+      // API / REST / architecture
+      if (text.includes('api') || text.includes('rest') || text.includes('architect') || text.includes('design pattern') || text.includes('mvc')) {
+        return `**John Matthew's API & Architecture Expertise:**\n\n• Designs and implements **RESTful APIs** using **Laravel MVC** architecture.\n• Connects React and Vue.js front-ends to optimized back-end services.\n• Uses **Eloquent ORM** for database abstraction and query building.\n• Implements **Role-Based Access Control (RBAC)** for secure multi-role systems.\n• Experience with high-concurrency patterns handling 15,000+ daily transactions.\n\nYou can explore the API Inspector section on this portfolio to see sample endpoint structures!`;
+      }
+
+      // Default fallback — more helpful
+      return `👋 Hello! I am the **AI Portfolio Agent** for **John Matthew A. Marcelo**.\n\nI can answer questions about:\n• **Who is John Matthew** — Full Stack Developer at Pinnacle Technologies\n• **5 Client Projects** — CLDH-EI, TMS, Bernardo College, Philyra POS, ICCT SMS\n• **Technical Skills** — Laravel, Vue.js, React, MySQL, REST APIs\n• **Experience** — 3+ years full-stack + 4+ years IT systems admin\n• **Education** — B.S. Computer Science, Best in Thesis 2018\n• **Contact** — jm.marcelo0212@gmail.com • 0908-519-2226\n• **Availability** — Remote / Hybrid / On-site\n\nTry asking: "What projects did you build?" or "What are your skills?"`;
     }
 
     // React Application
@@ -463,205 +524,10 @@ Answer recruiter and visitor inquiries with high technical professionalism.
       const [selectedProject, setSelectedProject] = useState(null);
       const [isResumeOpen, setIsResumeOpen] = useState(false);
       const [isChatOpen, setIsChatOpen] = useState(false);
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-      // GitHub & Data Hub State
-      const [projectsList, setProjectsList] = useState(PINNACLE_PROJECTS);
-      const [profileData, setProfileData] = useState(PROFILE);
-      const [isDataHubOpen, setIsDataHubOpen] = useState(false);
-      const [activeHubTab, setActiveHubTab] = useState('github');
-      const [ghUser, setGhUser] = useState('');
-      const [ghRepos, setGhRepos] = useState([]);
-      const [ghLoading, setGhLoading] = useState(false);
-      const [ghError, setGhError] = useState('');
-      const [hubNotification, setHubNotification] = useState('');
-
-      const showNotification = (msg) => {
-        setHubNotification(msg);
-        setTimeout(() => setHubNotification(''), 4000);
-      };
-
-      const exportPortfolioJson = () => {
-        const data = {
-          exportedAt: new Date().toISOString(),
-          profile: profileData,
-          projects: projectsList
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `john-matthew-marcelo-portfolio-${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showNotification("Exported full portfolio JSON successfully!");
-      };
-
-      const exportMarkdownCv = () => {
-        const md = `# ${profileData.name}
-**${profileData.title}**
-- **Email:** ${profileData.email}
-- **Phone:** ${profileData.phone}
-- **Location:** ${profileData.location}
-- **Status:** ${profileData.availability}
-
----
-
-## 👨‍💻 Professional Summary
-${profileData.bio}
-
----
-
-## 🛠️ Technical Competencies
-- **Front-end:** ${profileData.skills.frontend.join(', ')}
-- **Back-end:** ${profileData.skills.backend.join(', ')}
-- **Databases:** ${profileData.skills.databases.join(', ')}
-- **AI & Productivity:** ${profileData.skills.ai_tools.join(', ')}
-- **Systems & Administration:** ${profileData.skills.systems.join(', ')}
-
----
-
-## 💼 Work Experience
-${profileData.experience.map(e => `### ${e.role} — ${e.company}
-*${e.location} | ${e.period}*
-
-${e.achievements.map(a => `- ${a}`).join('\n')}`).join('\n\n')}
-
----
-
-## 🎓 Education & Honors
-${profileData.education.map(ed => `- **${ed.degree}** — ${ed.institution} (${ed.period})`).join('\n')}
-${profileData.awards.map(aw => `- 🏆 **${aw.title}**: ${aw.desc}`).join('\n')}
-
----
-
-## 🌟 Featured Client Projects (Pinnacle Technologies)
-${projectsList.map(p => `### [${p.title}](${p.url})
-**Client:** ${p.client} | **Category:** ${p.category} | **Status:** ${p.badge}
-
-${p.summary}
-
-- **Key Highlights:**
-${p.key_features.map(f => `  - ${f}`).join('\n')}
-- **Tech Stack:** ${p.tech_stack.join(', ')}
-- **Performance:** ${p.metrics.speed} (${p.metrics.users})
-`).join('\n\n')}
-`;
-        const blob = new Blob([md], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `John_Matthew_Marcelo_Resume.md`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showNotification("Exported CV in GitHub Markdown format!");
-      };
-
-      const exportProjectsJson = () => {
-        const blob = new Blob([JSON.stringify(projectsList, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `pinnacle-projects.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showNotification("Exported projects list JSON!");
-      };
-
-      const handleImportPortfolioJson = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          try {
-            const data = JSON.parse(evt.target.result);
-            let count = 0;
-            if (data.projects && Array.isArray(data.projects)) {
-              setProjectsList(data.projects);
-              count += data.projects.length;
-            } else if (Array.isArray(data)) {
-              setProjectsList(data);
-              count += data.length;
-            }
-            if (data.profile && typeof data.profile === 'object') {
-              setProfileData(data.profile);
-            }
-            showNotification(`Imported portfolio dataset successfully! (${count} projects loaded)`);
-          } catch (err) {
-            alert("Error parsing JSON: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-      };
-
-      const resetToDefaults = () => {
-        setProjectsList(PINNACLE_PROJECTS);
-        setProfileData(PROFILE);
-        showNotification("Reset portfolio data to default!");
-      };
-
-      const handleFetchGithubRepos = async (overrideUser) => {
-        const target = (overrideUser || ghUser).trim();
-        if (!target) {
-          setGhError("Please enter a GitHub username.");
-          return;
-        }
-        setGhLoading(true);
-        setGhError('');
-        try {
-          const res = await fetch(`https://api.github.com/users/${encodeURIComponent(target)}/repos?sort=pushed&per_page=12`);
-          if (!res.ok) {
-            if (res.status === 404) throw new Error(`GitHub user "${target}" not found.`);
-            if (res.status === 403) throw new Error(`GitHub API rate limit reached. Try again later or use JSON Import.`);
-            throw new Error(`GitHub error: ${res.statusText}`);
-          }
-          const repos = await res.json();
-          if (!Array.isArray(repos) || repos.length === 0) {
-            setGhRepos([]);
-            setGhError(`No public repositories found for "${target}".`);
-          } else {
-            setGhRepos(repos);
-          }
-        } catch (err) {
-          setGhError(err.message);
-        } finally {
-          setGhLoading(false);
-        }
-      };
-
-      const handleImportGhRepoToProjects = (repo) => {
-        const exists = projectsList.some(p => p.url === repo.html_url || p.title.toLowerCase() === repo.name.toLowerCase());
-        if (exists) {
-          showNotification(`"${repo.name}" is already in your projects list.`);
-          return;
-        }
-        const newProj = {
-          id: Date.now() + Math.random(),
-          slug: repo.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          title: repo.name.replace(/[-_]/g, ' ').toUpperCase(),
-          client: `GitHub (@${repo.owner?.login || ghUser})`,
-          url: repo.html_url,
-          category: "GitHub Repository",
-          badge: "Open Source",
-          summary: repo.description || "Public repository synced from GitHub.",
-          description: repo.description || `Public GitHub repository: ${repo.full_name}. Stars: ${repo.stargazers_count}, Forks: ${repo.forks_count}`,
-          key_features: [
-            `Primary Language: ${repo.language || 'Multi-language'}`,
-            `Visibility: ${repo.visibility || 'Public'}`,
-            `Stars: ${repo.stargazers_count} | Forks: ${repo.forks_count}`,
-            `Last Updated: ${new Date(repo.pushed_at).toLocaleDateString()}`
-          ],
-          tech_stack: [repo.language || 'Code', 'Git', 'GitHub', 'Open Source'],
-          metrics: { speed: `${repo.stargazers_count} Stars`, users: `${repo.forks_count} Forks` }
-        };
-        setProjectsList(prev => [newProj, ...prev]);
-        showNotification(`Added "${repo.name}" to your portfolio projects!`);
-      };
+      const projectsList = PINNACLE_PROJECTS;
+      const profileData = PROFILE;
 
       // Centralized Gemini API Key (Loaded from window or localStorage)
       const [geminiApiKey, setGeminiApiKey] = useState(() => window.PORTFOLIO_GEMINI_KEY || localStorage.getItem('marcelo_gemini_key') || '');
@@ -693,7 +559,6 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
         if (filter === 'erp') return p.category.includes('ERP');
         if (filter === 'pos') return p.category.includes('POS') || p.category.includes('FinTech');
         if (filter === 'scale') return p.category.includes('Concurrency') || p.slug.includes('icct');
-        if (filter === 'github') return p.category.includes('GitHub');
         return true;
       });
 
@@ -715,14 +580,16 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
 
         try {
           let reply = '';
-          const activeKey = geminiApiKey || window.PORTFOLIO_GEMINI_KEY;
+          const activeKey = (geminiApiKey || window.PORTFOLIO_GEMINI_KEY || '').trim();
 
-          // 1. If central Gemini key is provided, query Google Gemini 1.5 Flash directly
-          if (activeKey && activeKey.trim() !== '' && !activeKey.includes('YOUR_GEMINI')) {
+          // 1. If central Gemini key is provided, query Google Gemini live LLM directly
+          if (activeKey !== '' && !activeKey.includes('YOUR_GEMINI')) {
             try {
-              reply = await executeLiveLlm('gemini', activeKey.trim(), 'gemini-1.5-flash', text, updatedHistory);
+              reply = await executeLiveLlm('gemini', activeKey, 'gemini-3.6-flash', text, updatedHistory);
             } catch (gemErr) {
-              console.warn("Direct Gemini call error, trying backend or local resolver:", gemErr);
+              console.warn("Direct Gemini call error:", gemErr);
+              const localAns = resolveLocalKnowledge(text);
+              reply = `⚠️ **Gemini API Notice:** ${gemErr.message}\n\n*Falling back to Knowledge Base answer:*\n\n${localAns}`;
             }
           }
 
@@ -801,11 +668,11 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
           {/* Top Sticky Navbar */}
           <nav className="fixed top-0 left-0 right-0 z-40 bg-[#080b11]/85 backdrop-blur-md border-b border-slate-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-              <a href="#" className="flex items-center gap-2.5">
+              <a href="#" className="flex items-center gap-2.5 shrink-0">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-blue-500/20">
                   JM
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <span className="font-bold text-white tracking-tight text-sm sm:text-base">
                     John Matthew Marcelo
                   </span>
@@ -822,32 +689,63 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
                 <a href="#contact" className="hover:text-blue-400 transition-colors">Contact</a>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsChatOpen(true)}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all glow-blue"
+                  className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-all glow-blue"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span>Ask AI Agent</span>
                 </button>
                 <button
                   onClick={() => setIsResumeOpen(true)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+                  className="hidden sm:block px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
                 >
                   CV / Resume
                 </button>
+                {/* Mobile hamburger */}
                 <button
-                  onClick={() => setIsDataHubOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 transition-all shadow-sm shadow-purple-500/10"
-                  title="Import/Export portfolio datasets or sync with GitHub"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+                  aria-label="Toggle menu"
                 >
-                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                  <span>GitHub & Data Hub</span>
+                  {isMobileMenuOpen ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                  )}
                 </button>
               </div>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isMobileMenuOpen && (
+              <div className="md:hidden bg-[#080b11]/95 backdrop-blur-lg border-t border-slate-800 px-4 py-4 space-y-3">
+                <div className="flex flex-col gap-2 text-sm font-medium text-slate-300">
+                  <a href="#about" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">About</a>
+                  <a href="#projects" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">Projects</a>
+                  <a href="#skills" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">Skills</a>
+                  <a href="#experience" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">Experience</a>
+                  <a href="#api-explorer" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">API Explorer</a>
+                  <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="py-2 px-3 rounded-lg hover:bg-slate-800 hover:text-blue-400 transition-colors">Contact</a>
+                </div>
+                <div className="flex gap-2 pt-2 border-t border-slate-800">
+                  <button
+                    onClick={() => { setIsChatOpen(true); setIsMobileMenuOpen(false); }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-semibold bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Ask AI Agent
+                  </button>
+                  <button
+                    onClick={() => { setIsResumeOpen(true); setIsMobileMenuOpen(false); }}
+                    className="flex-1 px-3 py-2.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 border border-slate-700"
+                  >
+                    CV / Resume
+                  </button>
+                </div>
+              </div>
+            )}
           </nav>
 
           {/* Hero Section */}
@@ -1035,8 +933,7 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
                     { id: 'all', label: `All Projects (${projectsList.length})` },
                     { id: 'erp', label: `Academic ERPs (${projectsList.filter(p => p.category.includes('ERP')).length})` },
                     { id: 'pos', label: `Cloud POS (${projectsList.filter(p => p.category.includes('POS') || p.category.includes('FinTech')).length})` },
-                    { id: 'scale', label: `High Concurrency (${projectsList.filter(p => p.category.includes('Concurrency') || p.slug.includes('icct')).length})` },
-                    ...(projectsList.some(p => p.category.includes('GitHub')) ? [{ id: 'github', label: `GitHub (${projectsList.filter(p => p.category.includes('GitHub')).length})` }] : [])
+                    { id: 'scale', label: `High Concurrency (${projectsList.filter(p => p.category.includes('Concurrency') || p.slug.includes('icct')).length})` }
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -1050,13 +947,6 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
                       {tab.label}
                     </button>
                   ))}
-
-                  <button
-                    onClick={() => { setActiveHubTab('github'); setIsDataHubOpen(true); }}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-900/40 hover:bg-purple-900/70 text-purple-300 border border-purple-700/50 flex items-center gap-1.5 transition-all shadow-sm"
-                  >
-                    <span>+ Sync GitHub Repos</span>
-                  </button>
                 </div>
               </div>
 
@@ -1456,15 +1346,19 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
                   <div>
                     <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
                       John Matthew's AI Agent
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
-                        {geminiApiKey ? 'Gemini AI' : 'Active'}
+                      <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                        (geminiApiKey || window.PORTFOLIO_GEMINI_KEY)
+                          ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800'
+                          : 'bg-slate-800 text-slate-400 border-slate-700'
+                      }`}>
+                        {(geminiApiKey || window.PORTFOLIO_GEMINI_KEY) ? '⚡ Live Gemini' : '📚 Knowledge Engine'}
                       </span>
                     </h4>
                     <p className="text-[10px] text-slate-400 font-mono">Pinnacle Projects & Full-Stack Context</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <button onClick={() => setIsChatOpen(false)} className="text-slate-400 hover:text-white text-sm font-bold p-1">
                     ✕
                   </button>
@@ -1654,346 +1548,6 @@ ${p.key_features.map(f => `  - ${f}`).join('\n')}
                     Close
                   </button>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* Floating Toast Notification */}
-          {hubNotification && (
-            <div className="fixed bottom-6 left-6 z-50 px-4 py-2.5 rounded-xl bg-purple-950/90 border border-purple-500/50 text-purple-200 text-xs shadow-2xl flex items-center gap-2 backdrop-blur-md animate-bounce">
-              <span>✨</span>
-              <span>{hubNotification}</span>
-            </div>
-          )}
-
-          {/* GitHub & Portfolio Data Hub Modal */}
-          {isDataHubOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md">
-              <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-4xl w-full flex flex-col max-h-[90vh] overflow-hidden shadow-2xl">
-                
-                {/* Modal Header */}
-                <div className="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        GitHub & Data Hub
-                        <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                          Import & Export
-                        </span>
-                      </h3>
-                      <p className="text-xs text-slate-400">Import/export portfolio datasets, sync public GitHub repos, or deploy via GitHub Pages.</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setIsDataHubOpen(false)}
-                    className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex border-b border-slate-800 bg-slate-950/40 px-4 sm:px-6 pt-2 gap-2 overflow-x-auto text-xs font-semibold">
-                  {[
-                    { id: 'github', label: '🐙 GitHub Sync & Repos' },
-                    { id: 'export', label: '📤 Export Portfolio' },
-                    { id: 'import', label: '📥 Import Portfolio' },
-                    { id: 'deploy', label: '🚀 Deploy to GitHub' }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveHubTab(tab.id)}
-                      className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                        activeHubTab === tab.id
-                          ? 'border-purple-500 text-purple-400 font-bold'
-                          : 'border-transparent text-slate-400 hover:text-slate-200'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Tab Body */}
-                <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5 text-slate-300 text-xs">
-                  
-                  {/* Tab 1: GitHub Sync */}
-                  {activeHubTab === 'github' && (
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-800/40">
-                        <h4 className="font-bold text-white text-sm mb-1">Import Public Repositories from GitHub</h4>
-                        <p className="text-slate-300 text-xs leading-relaxed">
-                          Connect directly with GitHub's public REST API. Enter your GitHub username to fetch repositories and import them into your live portfolio project showcase.
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            value={ghUser}
-                            onChange={(e) => setGhUser(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleFetchGithubRepos()}
-                            placeholder="Enter your GitHub username (e.g. jm-marcelo0212)"
-                            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
-                          />
-                        </div>
-                        <button
-                          onClick={() => handleFetchGithubRepos()}
-                          disabled={ghLoading}
-                          className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                          {ghLoading ? (
-                            <>
-                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                              <span>Fetching...</span>
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                              </svg>
-                              <span>Fetch Repositories</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-
-                      {ghError && (
-                        <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs">
-                          ⚠️ {ghError}
-                        </div>
-                      )}
-
-                      {ghRepos.length > 0 && (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-white font-semibold">Found {ghRepos.length} Repositories:</span>
-                            <span className="text-slate-400 font-mono text-[11px]">Click "+ Import" to add any project to your live showcase</span>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1">
-                            {ghRepos.map(repo => {
-                              const isImported = projectsList.some(p => p.url === repo.html_url);
-                              return (
-                                <div key={repo.id} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-2 hover:border-slate-700 transition-colors">
-                                  <div>
-                                    <div className="flex items-center justify-between">
-                                      <span className="font-bold text-white text-xs truncate max-w-[180px]">{repo.name}</span>
-                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                                        {repo.language || 'Code'}
-                                      </span>
-                                    </div>
-                                    <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                                      {repo.description || 'Public GitHub repository'}
-                                    </p>
-                                  </div>
-                                  <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-[11px] font-mono text-slate-400">
-                                    <div className="flex items-center gap-3">
-                                      <span>⭐ {repo.stargazers_count}</span>
-                                      <span>🍴 {repo.forks_count}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <a
-                                        href={repo.html_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-400 hover:underline"
-                                      >
-                                        GitHub ↗
-                                      </a>
-                                      <button
-                                        onClick={() => handleImportGhRepoToProjects(repo)}
-                                        disabled={isImported}
-                                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
-                                          isImported
-                                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800 cursor-default'
-                                            : 'bg-purple-600 hover:bg-purple-500 text-white'
-                                        }`}
-                                      >
-                                        {isImported ? '✓ In Portfolio' : '+ Import'}
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Tab 2: Export Data */}
-                  {activeHubTab === 'export' && (
-                    <div className="space-y-4">
-                      <p className="text-slate-300 text-xs">
-                        Export your portfolio data into standard portable files. Download your complete configuration as JSON, or generate a GitHub-formatted Markdown CV ready for your profile README.
-                      </p>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        
-                        {/* Card 1 */}
-                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
-                          <div className="space-y-1">
-                            <span className="text-2xl">📦</span>
-                            <h4 className="font-bold text-white text-sm">Full Portfolio JSON</h4>
-                            <p className="text-slate-400 text-[11px]">
-                              Downloads all CV data, 5 Pinnacle client projects, technical skills, and milestones in a single portable JSON file.
-                            </p>
-                          </div>
-                          <button
-                            onClick={exportPortfolioJson}
-                            className="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
-                          >
-                            <span>⬇️ Download JSON</span>
-                          </button>
-                        </div>
-
-                        {/* Card 2 */}
-                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
-                          <div className="space-y-1">
-                            <span className="text-2xl">📄</span>
-                            <h4 className="font-bold text-white text-sm">Markdown CV / Resume</h4>
-                            <p className="text-slate-400 text-[11px]">
-                              Generates a clean GitHub Flavored Markdown resume (<code className="text-blue-400">README.md</code>) for job applications or your GitHub profile.
-                            </p>
-                          </div>
-                          <button
-                            onClick={exportMarkdownCv}
-                            className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
-                          >
-                            <span>⬇️ Download CV (.md)</span>
-                          </button>
-                        </div>
-
-                        {/* Card 3 */}
-                        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
-                          <div className="space-y-1">
-                            <span className="text-2xl">🏛️</span>
-                            <h4 className="font-bold text-white text-sm">Projects Dataset</h4>
-                            <p className="text-slate-400 text-[11px]">
-                              Exports the architectural case studies, metrics, and production links for all client projects in JSON format.
-                            </p>
-                          </div>
-                          <button
-                            onClick={exportProjectsJson}
-                            className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
-                          >
-                            <span>⬇️ Download Projects</span>
-                          </button>
-                        </div>
-
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tab 3: Import Data */}
-                  {activeHubTab === 'import' && (
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-xl bg-blue-950/20 border border-blue-800/40">
-                        <h4 className="font-bold text-white text-sm mb-1">Import Portfolio JSON File</h4>
-                        <p className="text-slate-300 text-xs leading-relaxed">
-                          Upload any exported portfolio JSON file to dynamically update your bio, skills, and project showcase in real time without reloading.
-                        </p>
-                      </div>
-
-                      <div className="p-6 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/50 flex flex-col items-center justify-center text-center space-y-3">
-                        <span className="text-3xl">📂</span>
-                        <div>
-                          <p className="font-bold text-white text-sm">Choose Portfolio JSON File</p>
-                          <p className="text-slate-400 text-[11px] mt-0.5">Supports .json files exported from this portfolio</p>
-                        </div>
-                        <input
-                          type="file"
-                          accept=".json"
-                          onChange={handleImportPortfolioJson}
-                          className="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer"
-                        />
-                      </div>
-
-                      <div className="flex justify-between items-center pt-2">
-                        <span className="text-slate-400 text-[11px]">Want to revert to John Matthew's original portfolio?</span>
-                        <button
-                          onClick={resetToDefaults}
-                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
-                        >
-                          Reset to Original Defaults
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tab 4: Deploy to GitHub */}
-                  {activeHubTab === 'deploy' && (
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-800/40">
-                        <h4 className="font-bold text-white text-sm mb-1">Push to GitHub & Publish Free Global Website</h4>
-                        <p className="text-slate-300 text-xs leading-relaxed">
-                          Your portfolio is completely ready for GitHub and GitHub Pages. Anyone on the internet will be able to view and interact with your portfolio, client projects, and AI agent.
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-                          <div className="flex items-center gap-2 font-bold text-white">
-                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">1</span>
-                            <span>Create an empty repository on GitHub</span>
-                          </div>
-                          <p className="text-slate-400 text-[11px] pl-7">
-                            Go to <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">github.com/new</a>, name it <code className="text-white">marcelo-portfolio</code> (Public), and leave "Add a README" unchecked.
-                          </p>
-                        </div>
-
-                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-                          <div className="flex items-center gap-2 font-bold text-white">
-                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">2</span>
-                            <span>Push your repository to GitHub</span>
-                          </div>
-                          <div className="pl-7">
-                            <p className="text-slate-400 text-[11px] mb-1.5">Run this in your PowerShell terminal:</p>
-                            <pre className="p-2.5 rounded-lg bg-black/70 border border-slate-800 font-mono text-[11px] text-blue-300 overflow-x-auto select-all">
-cd "C:\Users\JM\.gemini\antigravity\scratch\Marcelo portfolio"
-git remote add origin https://github.com/&lt;YOUR_USERNAME&gt;/marcelo-portfolio.git
-git push -u origin main
-                            </pre>
-                          </div>
-                        </div>
-
-                        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-                          <div className="flex items-center gap-2 font-bold text-white">
-                            <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-[10px]">3</span>
-                            <span>Enable Free GitHub Pages Hosting</span>
-                          </div>
-                          <p className="text-slate-400 text-[11px] pl-7 leading-relaxed">
-                            Inside your GitHub repository, click <strong>Settings</strong> → <strong>Pages</strong> → set Branch to <strong>main</strong> and folder to <strong>/ (root)</strong> → Click <strong>Save</strong>.
-                            <br />
-                            Your portfolio will be live at: <span className="text-emerald-400 font-mono font-bold">https://&lt;YOUR_USERNAME&gt;.github.io/marcelo-portfolio/</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-
-                {/* Modal Footer */}
-                <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex justify-between items-center">
-                  <span className="text-[11px] text-slate-500 font-mono">
-                    {hubNotification || 'Connected to GitHub REST API & Local Knowledge Engine'}
-                  </span>
-                  <button
-                    onClick={() => setIsDataHubOpen(false)}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition-colors"
-                  >
-                    Close Hub
-                  </button>
-                </div>
-
               </div>
             </div>
           )}
