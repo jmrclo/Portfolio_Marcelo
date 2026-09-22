@@ -588,8 +588,7 @@ Guidelines:
               reply = await executeLiveLlm('gemini', activeKey, 'gemini-3.6-flash', text, updatedHistory);
             } catch (gemErr) {
               console.warn("Direct Gemini call error:", gemErr);
-              const localAns = resolveLocalKnowledge(text);
-              reply = `⚠️ **Gemini API Notice:** ${gemErr.message}\n\n*Falling back to Knowledge Base answer:*\n\n${localAns}`;
+              reply = resolveLocalKnowledge(text);
             }
           }
 
